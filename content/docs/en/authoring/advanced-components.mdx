@@ -1,0 +1,156 @@
+---
+title: "Advanced components"
+description: "Reference for Accordion, Frame, Tooltip, and ParamField — four MDX components for structured content, media, and API documentation."
+section: "Authoring"
+order: 17
+lastUpdated: "2026-04-05"
+---
+
+These four components extend the [built-in component set](/en/authoring/built-in-components) with collapsible panels, image frames, inline tooltips, and API parameter tables.
+
+---
+
+## Accordion
+
+A collapsible disclosure panel. Useful for FAQs, optional detail, or content that most readers will skip.
+
+**Props:** `title` (required string) — the clickable summary label.
+
+```text
+<Accordion title="How does the search index get built?">
+  At build time, `search-index.json.ts` collects every published page and serializes
+  title, description, section, and a stripped-down version of the body into an Orama
+  index. The browser downloads it on first search.
+</Accordion>
+```
+
+<Accordion title="How does the search index get built?">
+  At build time, `search-index.json.ts` collects every published page and serializes title, description, section, and a stripped-down version of the body into an Orama index. The browser downloads it on first search.
+</Accordion>
+
+<Callout type="tip">
+  Nest any MDX inside an Accordion — code blocks, callouts, and lists all render correctly inside the panel.
+</Callout>
+
+Stack multiple Accordions to build a FAQ section:
+
+```text
+<Accordion title="Do I need to know Astro?">
+  No. Scrollup works out of the box. You only touch Astro config if you need
+  advanced customization.
+</Accordion>
+
+<Accordion title="Can I use a custom font?">
+  Yes — see the Colors & typography page for how to swap or extend the font stack.
+</Accordion>
+```
+
+<Accordion title="Do I need to know Astro?">
+  No. Scrollup works out of the box. You only touch Astro config if you need advanced customization.
+</Accordion>
+
+<Accordion title="Can I use a custom font?">
+  Yes — see the Colors & typography page for how to swap or extend the font stack.
+</Accordion>
+
+---
+
+## Frame
+
+A container for images and media. Adds a rounded border, correct display sizing, and an optional caption.
+
+**Props:**
+- `caption` — optional string displayed below the content
+- `border` — optional boolean, default `true`. Set `false` for borderless frames.
+
+```text
+<Frame caption="The three-column layout at full width.">
+  ![Screenshot of the docs layout](/screenshots/layout-overview.png)
+</Frame>
+```
+
+<Frame caption="A bordered frame with caption text below.">
+  <div style="background: var(--bg-surface); height: 120px; display: flex; align-items: center; justify-content: center; font-family: var(--sans); font-size: 13px; color: var(--text-3);">Image placeholder</div>
+</Frame>
+
+Without a border:
+
+```text
+<Frame border={false}>
+  ![Full-bleed diagram](/diagrams/architecture.png)
+</Frame>
+```
+
+<Callout type="note">
+  Frame sets `width: 100%` on its content, so images always fill the available content width. The original aspect ratio is preserved via `height: auto`.
+</Callout>
+
+---
+
+## Tooltip
+
+An inline tooltip that appears on hover. Wrap any inline text to add a dashed underline with an explanatory pop-up.
+
+**Props:** `text` (required string) — the tooltip content shown on hover.
+
+```text
+The build outputs a <Tooltip text="A site with no server-side rendering or runtime dependencies.">static site</Tooltip>
+that deploys to any CDN.
+```
+
+The build outputs a <Tooltip text="A site with no server-side rendering or runtime dependencies.">static site</Tooltip> that deploys to any CDN.
+
+```text
+Configure <Tooltip text="Internationalization — support for multiple languages.">i18n</Tooltip>
+by adding locale folders to content/docs/.
+```
+
+Configure <Tooltip text="Internationalization — support for multiple languages.">i18n</Tooltip> by adding locale folders to `content/docs/`.
+
+<Callout type="tip">
+  Keep tooltip text short — one sentence at most. Long tooltips overflow on mobile and defeat the purpose of keeping content inline.
+</Callout>
+
+---
+
+## ParamField
+
+A structured parameter row for API and configuration reference pages. Renders a parameter name, type badge, optional required indicator, and a description.
+
+**Props:**
+- `name` (required string) — the parameter name, displayed in monospace
+- `type` (required string) — the type label shown as a badge
+- `required` — optional boolean, default `false`. Shows a "required" badge when true.
+- `description` — optional string for a short inline description. Use the slot for longer explanations.
+
+```text
+<ParamField name="output" type="'static'" required description="Scrollup only supports static output." />
+```
+
+<ParamField name="output" type="'static'" required description="Scrollup only supports static output." />
+
+````text
+<ParamField name="site" type="string">
+  The full canonical URL of your deployed site. Used for sitemap and canonical link generation.
+
+  ```ts
+  site: 'https://docs.example.com'
+  ```
+</ParamField>
+````
+
+<ParamField name="site" type="string">
+  The full canonical URL of your deployed site. Used for sitemap and canonical link generation.
+
+  ```ts
+  site: 'https://docs.example.com'
+  ```
+</ParamField>
+
+<ParamField name="tags" type="string[]">
+  An array of topic tags for the page. Improves search relevance but is not displayed in the UI by default.
+</ParamField>
+
+<Callout type="tip">
+  ParamField is designed for API reference sections. For configuration options in a prose guide, a regular table or description list often reads more naturally.
+</Callout>

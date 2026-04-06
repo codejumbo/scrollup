@@ -1,0 +1,74 @@
+---
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<details class="accordion">
+  <summary>{title}</summary>
+  <div class="accordion-content">
+    <slot />
+  </div>
+</details>
+
+<style>
+  .accordion {
+    border: 1px solid var(--border-subtle);
+    border-radius: 10px;
+    margin: 16px 0;
+    overflow: hidden;
+  }
+
+  .accordion summary {
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-1);
+    padding: 14px 20px;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.12s;
+  }
+
+  .accordion summary:hover {
+    background: var(--bg-surface);
+  }
+
+  .accordion summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .accordion summary::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-right: 2px solid var(--text-3);
+    border-bottom: 2px solid var(--text-3);
+    transform: rotate(-45deg);
+    transition: transform 0.15s;
+    flex-shrink: 0;
+  }
+
+  .accordion[open] summary::before {
+    transform: rotate(45deg);
+  }
+
+  .accordion-content {
+    padding: 0 20px 16px;
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--text-2);
+  }
+
+  .accordion-content :global(p) {
+    margin-bottom: 8px;
+  }
+  .accordion-content :global(p:last-child) {
+    margin-bottom: 0;
+  }
+</style>

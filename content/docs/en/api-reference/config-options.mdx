@@ -1,0 +1,117 @@
+---
+title: "Config options"
+description: "Complete reference for all configuration options available in Scrollup."
+section: "API reference"
+order: 30
+lastUpdated: "2026-04-04"
+---
+
+This page documents every configuration option available in Scrollup's Astro configuration and content collection schema.
+
+## Astro configuration
+
+The `astro.config.ts` file controls the build pipeline, integrations, and output format.
+
+### output
+
+<Badge text="Required" variant="info" /> Type: `'static'`
+
+Scrollup generates static HTML files. This is the only supported output mode.
+
+```ts title="astro.config.ts"
+export default defineConfig({
+  output: 'static',
+})
+```
+
+### site
+
+Type: `string`
+
+The full URL where your documentation will be deployed. Used for generating canonical URLs and sitemap entries.
+
+```ts
+site: 'https://docs.example.com'
+```
+
+### integrations
+
+<Badge text="Required" variant="info" /> Type: `AstroIntegration[]`
+
+Scrollup requires the Expressive Code and MDX integrations, in that order:
+
+```ts title="astro.config.ts"
+import mdx from '@astrojs/mdx';
+import expressiveCode from 'astro-expressive-code';
+
+export default defineConfig({
+  integrations: [
+    expressiveCode({ /* theme config */ }),
+    mdx(),
+  ],
+})
+```
+
+<Callout type="warning">
+  Expressive Code must be listed *before* MDX in the integrations array. If reversed, code blocks in MDX files won't be processed correctly.
+</Callout>
+
+---
+
+## Content collection schema
+
+Defined in `src/content.config.ts`, the schema validates frontmatter for every MDX file at build time.
+
+### title
+
+<Badge text="Required" variant="info" /> Type: `string`
+
+The page title. Displayed in the sidebar, breadcrumbs, browser tab, and search results.
+
+### description
+
+<Badge text="Required" variant="info" /> Type: `string`
+
+A brief description of the page content. Displayed as the lead paragraph and in search results.
+
+### section
+
+<Badge text="Required" variant="info" /> Type: `string`
+
+The sidebar section this page belongs to. Pages with the same section value are grouped together.
+
+### order
+
+<Badge text="Required" variant="info" /> Type: `number`
+
+Numeric position within the section. Lower numbers appear first. Use increments of 10 to leave room for future insertions.
+
+### draft
+
+Type: `boolean` Default: `false`
+
+When `true`, the page is excluded from production builds but visible during development. Useful for work-in-progress content.
+
+### deprecated
+
+Type: `boolean` Default: `false`
+
+Marks the page as deprecated. The page remains accessible but may display a deprecation notice.
+
+### lastUpdated
+
+Type: `string` (ISO date)
+
+The date this page was last updated. Displayed at the bottom of the page when present.
+
+### author
+
+Type: `string`
+
+The author of the page. Useful for multi-author documentation projects.
+
+### tags
+
+Type: `string[]`
+
+An array of tags for categorization and search. Tags improve search relevance but are not displayed in the UI by default.

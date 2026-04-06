@@ -1,0 +1,68 @@
+---
+title: "Link buttons"
+description: "Render styled anchor buttons in docs pages using the LinkButton component."
+section: "Authoring"
+order: 20
+lastUpdated: "2026-04-05"
+---
+
+`<LinkButton>` renders an anchor tag styled as a button. Use it for calls to action within doc pages — linking to related guides, external resources, or download targets.
+
+**Props:**
+- `href` (required string) — the link destination
+- `variant` — `'primary'` (default) or `'secondary'`
+- `external` — optional boolean; adds `target="_blank"` and an `↗` indicator
+
+---
+
+## Primary button
+
+```text
+<LinkButton href="/en/getting-started/installation">Get started</LinkButton>
+```
+
+<LinkButton href="/en/getting-started/installation">Get started</LinkButton>
+
+---
+
+## Secondary button
+
+```text
+<LinkButton href="/en/authoring/markdown-and-mdx" variant="secondary">Read the authoring guide</LinkButton>
+```
+
+<LinkButton href="/en/authoring/markdown-and-mdx" variant="secondary">Read the authoring guide</LinkButton>
+
+---
+
+## External link
+
+Set `external` to open in a new tab and show the `↗` indicator:
+
+```text
+<LinkButton href="https://astro.build" external>Astro documentation</LinkButton>
+```
+
+<LinkButton href="https://astro.build" external>Astro documentation</LinkButton>
+
+---
+
+## Side-by-side buttons
+
+Wrap multiple `<LinkButton>` elements in a `<div>` with inline flex to place them side by side:
+
+```text
+<div style="display: flex; gap: 12px; flex-wrap: wrap; margin: 20px 0;">
+  <LinkButton href="/en/getting-started/installation">Get started</LinkButton>
+  <LinkButton href="https://github.com" variant="secondary" external>View on GitHub</LinkButton>
+</div>
+```
+
+<div style="display: flex; gap: 12px; flex-wrap: wrap; margin: 20px 0;">
+  <LinkButton href="/en/getting-started/installation">Get started</LinkButton>
+  <LinkButton href="https://github.com" variant="secondary" external>View on GitHub</LinkButton>
+</div>
+
+<Callout type="tip">
+  Keep button labels short and action-oriented — "Get started", "View docs", "Download". Avoid "click here".
+</Callout>

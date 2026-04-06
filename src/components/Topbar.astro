@@ -1,0 +1,228 @@
+---
+import LogoMark from './LogoMark.astro';
+import SearchTrigger from './SearchTrigger.astro';
+import ThemeToggle from './ThemeToggle.astro';
+import LanguageSwitcher from './LanguageSwitcher.astro';
+import { siteConfig, socialIcons } from '@/lib/config';
+import { useTranslations, normalizeLocale, type Locale } from '@/lib/i18n';
+
+interface Props {
+  variant?: 'default' | 'branded';
+  hideSearch?: boolean;
+  hasSidebar?: boolean;
+  currentLocale?: Locale;
+  currentSlug?: string;
+  availableLocales?: Locale[];
+}
+
+const { variant = 'default', hideSearch = false, hasSidebar = false, currentLocale, currentSlug, availableLocales } = Astro.props;
+const t = useTranslations(normalizeLocale(currentLocale));
+---
+
+<header class="topbar" data-variant={variant}>
+  <div class="topbar-inner">
+    {hasSidebar && (
+      <button
+        class="mobile-menu-btn"
+        id="mobile-menu-btn"
+        aria-expanded="false"
+        aria-controls="sidebar-nav"
+        aria-label={t('mobile.menu.open')}
+        data-label-open={t('mobile.menu.open')}
+        data-label-close={t('mobile.menu.close')}
+      >
+        <svg class="hamburger-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+    )}
+    <LogoMark />
+    <div class="topbar-center">
+      {!hideSearch && <SearchTrigger locale={currentLocale} />}
+    </div>
+    <div class="topbar-right">
+      {siteConfig.socialLinks.map((link) => (
+        <a class="icon-btn" href={link.url} target="_blank" rel="noopener noreferrer" title={link.platform} aria-label={link.platform}>
+          <Fragment set:html={socialIcons[link.platform] || ''} />
+        </a>
+      ))}
+      {currentLocale && currentSlug && availableLocales && availableLocales.length > 1 && (
+        <LanguageSwitcher currentLocale={currentLocale} currentSlug={currentSlug} availableLocales={availableLocales} />
+      )}
+      <ThemeToggle locale={currentLocale} />
+    </div>
+  </div>
+</header>
+
+<style>
+  .topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    height: 52px;
+    background: color-mix(in srgb, var(--bg) 92%, transparent);
+    backdrop-filter: blur(16px) saturate(1.2);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .topbar-inner {
+    max-width: var(--shell-max);
+    margin: 0 auto;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 32px;
+  }
+
+  .topbar-center {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+  }
+
+  .topbar-right {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+  }
+
+  .icon-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: none;
+    color: var(--text-3);
+    cursor: pointer;
+    border-radius: var(--radius);
+    transition: color 0.15s, background 0.15s;
+    font-size: 15px;
+  }
+  .icon-btn:hover {
+    color: var(--text-2);
+    background: var(--bg-surface);
+  }
+
+  /* Branded variant — dark blue navbar */
+  .topbar[data-variant="branded"] {
+    background: linear-gradient(to right, hsl(217 98% 20%), hsl(216 99% 30%), hsl(217 98% 20%));
+    backdrop-filter: blur(12px);
+    border-bottom-color: rgba(255,255,255,0.1);
+  }
+
+  .topbar[data-variant="branded"] .icon-btn,
+  .topbar[data-variant="branded"] :global(.logo),
+  .topbar[data-variant="branded"] :global(.theme-toggle) {
+    color: rgba(255,255,255,0.85);
+  }
+  .topbar[data-variant="branded"] .icon-btn:hover,
+  .topbar[data-variant="branded"] :global(.theme-toggle:hover) {
+    color: #ffffff;
+    background: rgba(255,255,255,0.1);
+  }
+  .topbar[data-variant="branded"] :global(.logo:hover) {
+    color: #ffffff;
+  }
+
+  .topbar[data-variant="branded"] :global(.search-trigger) {
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.5);
+  }
+  .topbar[data-variant="branded"] :global(.search-trigger:hover) {
+    background: rgba(255,255,255,0.14);
+    border-color: rgba(255,255,255,0.25);
+  }
+  .topbar[data-variant="branded"] :global(.search-trigger kbd) {
+    color: rgba(255,255,255,0.4);
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.12);
+  }
+
+  :global([data-theme="dark"]) .topbar[data-variant="branded"] {
+    background: linear-gradient(to right, hsl(217 55% 13%), hsl(216 60% 18%), hsl(217 55% 13%));
+    border-bottom-color: rgba(255,255,255,0.06);
+  }
+
+  .topbar[data-variant="branded"] :global(.lang-trigger) {
+    color: rgba(255,255,255,0.75);
+  }
+  .topbar[data-variant="branded"] :global(.lang-trigger:hover) {
+    color: #ffffff;
+    background: rgba(255,255,255,0.1);
+  }
+
+  @media (max-width: 767px) {
+    .topbar-inner {
+      padding: 0 12px;
+    }
+    .topbar-center {
+      min-width: 0;
+    }
+  }
+
+  /* Mobile hamburger — hidden on desktop, shown only at ≤767px */
+  .mobile-menu-btn {
+    display: none; /* overridden in mobile media query below */
+    width: 32px;
+    height: 32px;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: none;
+    color: var(--text-3);
+    cursor: pointer;
+    border-radius: var(--radius);
+    transition: color 0.15s, background 0.15s;
+    margin-right: 4px;
+    flex-shrink: 0;
+  }
+  .mobile-menu-btn:hover {
+    color: var(--text-2);
+    background: var(--bg-surface);
+  }
+
+  @media (max-width: 767px) {
+    .mobile-menu-btn {
+      display: flex;
+    }
+  }
+</style>
+
+<script>
+  function initMobileMenu() {
+    const btn = document.getElementById('mobile-menu-btn') as HTMLButtonElement | null;
+    if (!btn || btn.dataset.mobileInit) return;
+    btn.dataset.mobileInit = '1';
+
+    const nav = document.getElementById('sidebar-nav');
+    if (!nav) return;
+
+    const labelOpen = btn.dataset.labelOpen ?? 'Open navigation menu';
+    const labelClose = btn.dataset.labelClose ?? 'Close navigation menu';
+
+    function updateState(open: boolean) {
+      nav!.toggleAttribute('data-mobile-open', open);
+      btn!.setAttribute('aria-expanded', String(open));
+      btn!.setAttribute('aria-label', open ? labelClose : labelOpen);
+    }
+
+    btn.addEventListener('click', () => {
+      updateState(!nav.hasAttribute('data-mobile-open'));
+    });
+
+    // Close sidebar when navigating to a new page (fires once then cleans itself up)
+    document.addEventListener('astro:before-swap', () => updateState(false), { once: true });
+  }
+
+  initMobileMenu();
+  document.addEventListener('astro:after-swap', initMobileMenu);
+</script>

@@ -1,0 +1,15 @@
+---
+import { Code as ECCode } from 'astro-expressive-code/components';
+
+interface Props {
+  code: string;
+  lang?: string;
+  title?: string;
+  mark?: string | string[];
+  frame?: 'code' | 'terminal' | 'none' | 'auto';
+}
+
+const { code, lang = 'text', title, mark, frame } = Astro.props;
+---
+
+<ECCode code={code} lang={lang} title={title} mark={mark} frame={frame} />

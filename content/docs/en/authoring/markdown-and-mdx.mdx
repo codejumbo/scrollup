@@ -1,0 +1,83 @@
+---
+title: "Markdown & MDX"
+description: "Write documentation in Markdown with the power of JSX components when you need them."
+section: "Authoring"
+order: 10
+lastUpdated: "2026-04-04"
+---
+
+Scrollup uses MDX — Markdown with optional JSX. This means every standard Markdown feature works out of the box, and you can drop in custom components for richer content when plain Markdown isn't enough.
+
+## Standard Markdown
+
+Everything you know about Markdown works here. Headings, paragraphs, links, lists, images, bold, italic, inline code, and code blocks all render with Scrollup's carefully tuned typography.
+
+```md title="example.mdx"
+# This is a heading
+
+A paragraph with **bold**, *italic*, and `inline code`.
+
+- Unordered list item
+- Another item
+
+1. Ordered list item
+2. Another item
+
+[A link to somewhere](/getting-started/installation)
+```
+
+## Using components
+
+MDX lets you import and use Astro (or React) components directly in your content files. Import at the top of the file, then use the component inline.
+
+```mdx title="using-components.mdx"
+---
+title: "My page"
+description: "A page that uses components."
+section: "Guides"
+order: 1
+---
+
+import Callout from '@/components/mdx/Callout.astro';
+
+Some regular Markdown content here.
+
+<Callout type="tip" title="Pro tip">
+  Components can contain Markdown content too.
+</Callout>
+```
+
+<Callout type="note">
+  Component imports must be placed *after* the frontmatter block and *before* the content. This is a requirement of the MDX format.
+</Callout>
+
+## Available components
+
+Scrollup ships with a focused set of components designed for documentation:
+
+| Component | Purpose |
+|-----------|---------|
+| `Callout` | Notes, warnings, and tips |
+| `Tabs` / `Tab` | Tabbed content panels |
+| `Steps` / `Step` | Numbered procedures |
+| `LinkGrid` | Navigation card grids |
+| `ApiEndpoint` | API method and path display |
+| `Badge` | Inline status labels |
+
+Each component is documented in its own page under the Authoring section.
+
+---
+
+## Tables
+
+Standard Markdown tables render with clean, minimal styling:
+
+| Feature | Status | Version |
+|---------|--------|---------|
+| MDX support | <Badge text="Available" variant="success" /> | 1.0 |
+| Search | <Badge text="Available" variant="success" /> | 1.0 |
+| i18n | <Badge text="Planned" variant="info" /> | 2.0 |
+
+## Horizontal rules
+
+Use `---` on its own line to create a horizontal rule. These are useful for separating major sections within a single page.

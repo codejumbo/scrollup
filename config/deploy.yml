@@ -1,0 +1,37 @@
+service: scrollup
+
+image: codejumbo/scrollup
+
+servers:
+  web:
+    hosts:
+      - 5.161.88.56
+
+registry:
+  server: ghcr.io
+  username:
+    - KAMAL_REGISTRY_USERNAME
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+
+ssh:
+  user: root
+  keys:
+    - ~/.ssh/kamal_ed25519
+
+builder:
+  arch: amd64
+  context: .
+
+proxy:
+  ssl: true
+  host: scrollup.io
+  app_port: 8080
+  healthcheck:
+    path: /health
+    interval: 10
+
+env:
+  clear:
+    NODE_ENV: production
+  secret: []

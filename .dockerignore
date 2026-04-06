@@ -1,0 +1,12 @@
+node_modules/
+.git/
+.github/
+my-local-stuff/
+infrastructure/
+dist/
+.astro/
+.DS_Store
+*.md
+Gemfile
+Gemfile.lock
+config/

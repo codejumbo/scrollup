@@ -1,0 +1,88 @@
+---
+import type { TFunction } from '@/lib/i18n';
+
+interface Props {
+  headings: { depth: number; slug: string; text: string }[];
+  tocDepth?: number;
+  t: TFunction;
+}
+
+const { headings, tocDepth = 2, t } = Astro.props;
+const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= tocDepth);
+---
+
+{tocHeadings.length > 0 && (
+  <aside class="toc">
+    <div class="toc-label">{t('toc.title')}</div>
+    {tocHeadings.map((heading) => (
+      <a href={`#${heading.slug}`} data-toc-link class={heading.depth > 2 ? `toc-indent-${heading.depth}` : ''}>{heading.text}</a>
+    ))}
+  </aside>
+)}
+
+<script>
+  function initToc() {
+    const tocLinks = document.querySelectorAll('[data-toc-link]');
+    if (tocLinks.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            tocLinks.forEach((link) => link.classList.remove('on'));
+            const target = document.querySelector(
+              `[data-toc-link][href="#${entry.target.id}"]`
+            );
+            if (target) target.classList.add('on');
+          }
+        });
+      },
+      { rootMargin: '-72px 0px -70% 0px' }
+    );
+
+    document.querySelectorAll('.article h2[id], .article h3[id], .article h4[id]').forEach((h) => observer.observe(h));
+
+    document.addEventListener('astro:before-swap', () => observer.disconnect(), { once: true });
+  }
+
+  initToc();
+  document.addEventListener('astro:after-swap', initToc);
+</script>
+
+<style>
+  .toc {
+    position: sticky;
+    top: 52px;
+    height: calc(100vh - 52px);
+    padding: 28px 16px;
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+  .toc::-webkit-scrollbar { display: none; }
+
+  .toc-label {
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--text-3);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .toc a {
+    display: block;
+    font-family: var(--sans);
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--text-3);
+    text-decoration: none;
+    padding: 3px 0 3px 12px;
+    border-left: 1.5px solid transparent;
+    transition: all 0.12s;
+  }
+  .toc a:hover { color: var(--text-2); }
+  .toc a.on { color: var(--text-1); border-left-color: var(--text-1); }
+  .toc a.toc-indent-3 { padding-left: 24px; font-size: 12px; }
+  .toc a.toc-indent-4 { padding-left: 36px; font-size: 11.5px; }
+</style>

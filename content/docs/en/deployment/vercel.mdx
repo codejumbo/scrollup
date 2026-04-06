@@ -1,0 +1,59 @@
+---
+title: "Vercel"
+description: "Deploy your Scrollup site to Vercel with automatic preview deploys for every branch."
+section: "Deployment"
+order: 40
+lastUpdated: "2026-04-04"
+---
+
+Vercel is the simplest way to deploy Scrollup. It automatically detects Astro projects, builds on every push, and creates preview deployments for pull requests.
+
+## Setup
+
+<Steps>
+  <Step num={1} title="Push your project to GitHub">
+    Ensure your Scrollup project is in a GitHub repository. Vercel connects directly to your repo.
+  </Step>
+  <Step num={2} title="Import in Vercel">
+    Go to vercel.com, click "Add New Project", and import your GitHub repository. Vercel auto-detects the Astro framework.
+  </Step>
+  <Step num={3} title="Deploy">
+    Click "Deploy". Vercel runs `npm run build` and serves the `dist/` output. Your site is live in under a minute.
+  </Step>
+</Steps>
+
+## Configuration
+
+No special configuration is needed. Vercel detects `astro.config.ts` and sets the correct build command and output directory automatically.
+
+If you need to customize, create a `vercel.json` in your project root:
+
+```json title="vercel.json"
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist"
+}
+```
+
+## Preview deployments
+
+Every pull request automatically receives a preview deployment at a unique URL. This lets reviewers see documentation changes rendered exactly as they'll appear in production — no need to run the build locally.
+
+<Callout type="tip" title="Branch deploys">
+  Vercel creates a deployment for every branch push, not just pull requests. Use this to share work-in-progress documentation with teammates before opening a PR.
+</Callout>
+
+---
+
+## Custom domain
+
+In the Vercel dashboard, go to your project's Settings, then Domains. Add your custom domain and update your DNS records. Vercel automatically provisions an SSL certificate.
+
+Update the `site` field in `astro.config.ts` to match your custom domain:
+
+```ts title="astro.config.ts"
+export default defineConfig({
+  site: 'https://docs.yourcompany.com',
+  // ...
+})
+```

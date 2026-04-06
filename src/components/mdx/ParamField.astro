@@ -1,0 +1,85 @@
+---
+interface Props {
+  name: string;
+  type: string;
+  required?: boolean;
+  description?: string;
+}
+
+const { name, type, required = false, description } = Astro.props;
+---
+
+<div class="param-field">
+  <div class="param-header">
+    <code class="param-name">{name}</code>
+    <span class="param-type">{type}</span>
+    {required && <span class="param-required">required</span>}
+  </div>
+  {description && <p class="param-desc">{description}</p>}
+  <slot />
+</div>
+
+<style>
+  .param-field {
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 16px 0;
+  }
+
+  .param-field:first-child {
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .param-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .param-name {
+    font-family: var(--mono);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-1);
+    background: none;
+    padding: 0;
+  }
+
+  .param-type {
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    padding: 2px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    background: var(--bg-surface);
+    color: var(--text-2);
+  }
+
+  .param-required {
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    padding: 2px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    background: color-mix(in srgb, #DCC9A0 15%, var(--bg));
+    color: #DCC9A0;
+  }
+
+  .param-desc {
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--text-2);
+    margin: 6px 0 0;
+  }
+
+  .param-field :global(p) {
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--text-2);
+    margin: 6px 0 0;
+  }
+</style>

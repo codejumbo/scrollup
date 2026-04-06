@@ -1,0 +1,66 @@
+---
+title: "Notes & asides"
+description: "Use callouts to highlight important information without disrupting the reading flow."
+section: "Authoring"
+order: 12
+lastUpdated: "2026-04-04"
+---
+
+Callouts draw attention to supplementary information — a helpful aside, a potential pitfall, or a useful shortcut. They're designed to feel like a quiet whisper in the margin, not a shouting banner across the page.
+
+## Usage
+
+Import the `Callout` component and wrap your content:
+
+```mdx title="example.mdx"
+import Callout from '@/components/mdx/Callout.astro';
+
+<Callout type="note">
+  This is a note. It provides additional context.
+</Callout>
+```
+
+## Types
+
+There are three callout types. They differ only in their label text — the visual style is deliberately identical, because the *content* should signal urgency, not the container.
+
+### Note
+
+<Callout type="note">
+  Source Serif 4 is a variable font designed by Adobe specifically for screen readability. It provides the warmth of a serif typeface without sacrificing legibility at small sizes.
+</Callout>
+
+### Tip
+
+<Callout type="tip" title="Keyboard shortcut">
+  Press `Cmd+K` (or `Ctrl+K` on Windows/Linux) anywhere on the page to open the search dialog.
+</Callout>
+
+### Warning
+
+<Callout type="warning">
+  Changing the `--content-w` variable affects the entire reading experience. The default 860px was chosen to produce 75–80 characters per line, which research identifies as optimal for sustained reading.
+</Callout>
+
+## Custom titles
+
+Override the default label with the `title` prop:
+
+```mdx
+<Callout type="tip" title="Performance hint">
+  Self-hosting fonts eliminates the network request to Google Fonts,
+  reducing your page load time by 100-300ms.
+</Callout>
+```
+
+<Callout type="tip" title="Performance hint">
+  Self-hosting fonts eliminates the network request to Google Fonts, reducing your page load time by 100–300ms.
+</Callout>
+
+---
+
+## Design philosophy
+
+Scrollup deliberately avoids the common pattern of colored left-border callouts (blue for info, yellow for warning, green for tip). Those color-coded borders are visual noise — they create a patchwork of competing accents on the page and train readers to skip over callouts entirely.
+
+Instead, all callout types share the same subtle background and rounded container. The label text alone indicates the type. This keeps the page visually calm and ensures readers actually *read* the callout content.

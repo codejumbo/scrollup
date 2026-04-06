@@ -1,0 +1,60 @@
+---
+interface LinkItem {
+  title: string;
+  description: string;
+  href: string;
+}
+
+interface Props {
+  links: LinkItem[];
+}
+
+const { links } = Astro.props;
+---
+
+<div class="link-grid">
+  {links.map((link) => (
+    <a href={link.href}>
+      <div class="lg-title">{link.title} &rarr;</div>
+      <div class="lg-desc">{link.description}</div>
+    </a>
+  ))}
+</div>
+
+<style>
+  .link-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 28px 0;
+  }
+
+  .link-grid a {
+    display: block;
+    background: var(--bg);
+    padding: 22px 24px;
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+  .link-grid a:hover { background: var(--bg-surface); }
+
+  .lg-title {
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-1);
+    margin-bottom: 4px;
+    letter-spacing: -0.01em;
+  }
+  .lg-desc {
+    font-family: var(--sans);
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--text-3);
+    line-height: 1.45;
+  }
+</style>

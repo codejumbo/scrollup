@@ -1,0 +1,101 @@
+---
+title: "Adding a language"
+description: "How to add translated pages to your Scrollup site. The routing, sidebar, and language switcher all wire up automatically."
+section: "Internationalization"
+order: 21
+---
+
+Scrollup has i18n support built in. Adding a new language requires no configuration changes — you create content files and the routing, sidebar, and language switcher handle themselves.
+
+## How it works
+
+Content lives under `content/docs/{locale}/`. The locale prefix becomes the first segment of the URL:
+
+```
+content/docs/en/getting-started/introduction.mdx  →  /en/getting-started/introduction
+content/docs/fr/getting-started/introduction.mdx  →  /fr/getting-started/introduction
+content/docs/ja/getting-started/introduction.mdx  →  /ja/getting-started/introduction
+```
+
+The sidebar only shows pages for the current locale. The language switcher only appears on a page when two or more locales have a file at the same path — so it stays hidden until you actually have something to switch to.
+
+## Supported locales
+
+The following locales are configured out of the box:
+
+| Code | Language |
+|------|----------|
+| `en` | English |
+| `fr` | Français |
+| `es` | Español |
+| `de` | Deutsch |
+| `ja` | 日本語 |
+| `hi` | हिन्दी |
+
+UI chrome (navigation labels, search strings, table of contents heading, etc.) is already translated for all six.
+
+## Adding a translated page
+
+Create an `.mdx` file under `content/docs/{locale}/` mirroring the path of the English page:
+
+```
+content/docs/fr/getting-started/introduction.mdx
+```
+
+The frontmatter fields (`title`, `description`, `section`, `order`) should be translated. The `section` value controls which sidebar group the page appears in — it can be translated too, but make sure all pages in a locale use the same section string consistently.
+
+```mdx
+---
+title: "Introduction"
+description: "Scrollup est une plateforme de documentation construite pour la clarté, la beauté et la rapidité."
+section: "Getting started"
+order: 1
+---
+
+Contenu en français ici...
+```
+
+<Callout type="tip">
+  You don't need to translate every page before publishing. Pages that only exist in English won't appear in the French sidebar — users stay in whichever locale has content.
+</Callout>
+
+## Adding a new locale
+
+If you need a language beyond the six defaults, add it to `src/lib/i18n.ts`:
+
+1. Add the code to `SUPPORTED_LOCALES`
+2. Add the display name to `LOCALE_NAMES`
+3. Add a translation dictionary entry with all the required keys (copy English as a starting point)
+
+```typescript
+export const SUPPORTED_LOCALES = ['en', 'fr', 'es', 'de', 'ja', 'hi', 'pt'] as const;
+
+export const LOCALE_NAMES: Record<Locale, string> = {
+  // ...existing entries
+  pt: 'Português',
+};
+
+const translations = {
+  // ...existing entries
+  pt: {
+    'toc.title': 'Nesta página',
+    'nav.prev': 'Anterior',
+    'nav.next': 'Próximo',
+    // ...all other keys
+  },
+};
+```
+
+Then create your content under `content/docs/pt/` and it routes automatically.
+
+## Linking between locales
+
+When writing translated pages, internal links should use the locale prefix matching the target page's locale. If the target page doesn't have a translated version yet, link to the English one:
+
+```mdx
+<!-- Link to a translated page -->
+[Installation](/fr/getting-started/installation)
+
+<!-- Link to English when no translation exists yet -->
+[Configuration](/en/getting-started/configuration)
+```

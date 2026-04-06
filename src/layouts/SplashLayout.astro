@@ -1,0 +1,110 @@
+---
+import '@/styles/global.css';
+import { ClientRouter } from 'astro:transitions';
+import { Topbar, Footer } from '@/lib/overrides';
+import MermaidInit from '@/components/MermaidInit.astro';
+import SearchDialog from '@/components/SearchDialog.astro';
+import ThemeInit from '@/components/ThemeInit.astro';
+import HeroSection from '@/components/HeroSection.astro';
+import PageBanner from '@/components/PageBanner.astro';
+import SEOHead from '@/components/SEOHead.astro';
+import { getSiteName } from '@/lib/config';
+import { resolvedConfig as siteConfig, globalHeadTags } from '@/lib/resolved-config';
+import { useTranslations, normalizeLocale, type Locale } from '@/lib/i18n';
+
+interface Props {
+  title: string;
+  description: string;
+  head?: { tag: string; attrs?: Record<string, string>; content?: string }[];
+  banner?: string;
+  locale?: string;
+  availableLocales?: Locale[];
+  currentSlug?: string;
+  hero?: {
+    title?: string;
+    tagline?: string;
+    image?: { src: string; alt?: string };
+    actions?: { label: string; href: string; variant?: 'primary' | 'secondary'; external?: boolean }[];
+  };
+}
+
+const { title, description, head = [], banner, locale = 'en', availableLocales, currentSlug, hero } = Astro.props;
+const safeLocale = normalizeLocale(locale);
+const t = useTranslations(safeLocale);
+const pageUrl = `${siteConfig.siteUrl}/${currentSlug ?? ''}`;
+const escapeAttr = (v: string) => v.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+---
+
+<!DOCTYPE html>
+<html lang={safeLocale}>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content={description} />
+  <link rel="icon" type="image/svg+xml" href={siteConfig.favicon} />
+  <title>{title} — {getSiteName(safeLocale)}</title>
+  <SEOHead title={`${title} — ${getSiteName(safeLocale)}`} description={description} url={pageUrl} />
+  {siteConfig.customCss.map((href) => <link rel="stylesheet" href={href} />)}
+  {head
+    .filter((tag) => !(tag.tag === 'script' && tag.content))
+    .map((tag) => (
+      <Fragment set:html={`<${tag.tag}${Object.entries(tag.attrs ?? {}).map(([k, v]) => ` ${k}="${escapeAttr(v)}"`).join('')}>${tag.content ?? ''}</${tag.tag}>`} />
+    ))
+  }
+  {globalHeadTags.map((tag) => (
+    <Fragment set:html={`<${tag.tag}${Object.entries(tag.attrs ?? {}).map(([k, v]) => ` ${k}="${escapeAttr(v)}"`).join('')}>${tag.content ?? ''}</${tag.tag}>`} />
+  ))}
+  <ClientRouter />
+  <ThemeInit />
+</head>
+<body>
+  <a href="#main-content" class="skip-link">{t('skip.link')}</a>
+  <Topbar currentLocale={safeLocale} currentSlug={currentSlug} availableLocales={availableLocales} />
+  <SearchDialog locale={safeLocale} />
+  <main class="splash-main" id="main-content">
+    <div class="splash-content">
+      {banner && <PageBanner message={banner} t={t} />}
+      {hero && <HeroSection hero={hero} />}
+      <slot />
+    </div>
+  </main>
+  <Footer />
+  <MermaidInit />
+</body>
+</html>
+
+<style>
+  .skip-link {
+    position: absolute;
+    top: -100%;
+    inset-inline-start: 16px;
+    z-index: 9999;
+    padding: 8px 16px;
+    background: var(--accent);
+    color: #fff;
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: var(--radius);
+    text-decoration: none;
+    transition: top 0.1s;
+  }
+  .skip-link:focus { top: 8px; }
+
+  .splash-main {
+    min-height: 100vh;
+    padding-top: 52px;
+  }
+
+  .splash-content {
+    max-width: var(--content-w);
+    margin: 0 auto;
+    padding: 40px 32px 120px;
+  }
+
+  @media (max-width: 767px) {
+    .splash-content {
+      padding: 24px 20px 80px;
+    }
+  }
+</style>

@@ -1,0 +1,54 @@
+---
+title: "Introduction"
+description: "Scrollup is a documentation platform built for clarity, beauty, and speed. Learn what makes it different."
+section: "Getting started"
+order: 1
+lastUpdated: "2026-04-04"
+---
+
+Good documentation is invisible. You don't notice the typeface, the spacing, or the color of the page. You notice the *answer* — delivered clearly, quickly, and without friction. Scrollup was designed around that principle.
+
+## Why Scrollup?
+
+Most documentation tools treat design as an afterthought. Content management comes first, and presentation is handled by a generic theme you're expected to customize later. The result is documentation that works but doesn't *feel* right — slightly too cramped, slightly too loud, slightly too generic.
+
+Scrollup inverts this. Every visual decision — from the 860-pixel content width to the serif body typeface to the warm off-white background — was made deliberately, informed by typographic research and reading-comfort science. The goal is documentation that feels like reading a well-typeset book, not scanning a web application.
+
+## Design principles
+
+Scrollup follows three core principles that inform every component and layout decision:
+
+**Readability first.** The content width is capped at 860 pixels, producing 70–80 characters per line — the range research identifies as optimal for sustained reading. Body text is set in Source Serif 4 at 17 pixels with 1.8 line height, creating generous vertical rhythm that reduces eye fatigue.
+
+**Quiet interface.** The navigation, search, and table of contents are present but understated. They use a neutral sans-serif at small sizes and muted colors. When you're reading, the UI disappears. When you need it, it's exactly where you expect.
+
+**No unnecessary decoration.** There are no gradient hero sections, no animated backgrounds, no emoji-laden callout cards. Decoration that doesn't serve comprehension is noise. Scrollup earns trust through restraint.
+
+---
+
+## What's included
+
+Scrollup ships with everything you need to write, build, and deploy professional documentation:
+
+- **Static site generation** powered by Astro — fast builds, zero client-side JavaScript by default
+- **MDX content** with custom components for callouts, tabs, steps, and link grids
+- **Full-text search** via Orama — instant, client-side, no external service required
+- **Dark mode** with hand-picked colors, not an automated inversion
+- **Responsive layout** that adapts gracefully from wide monitors to mobile screens
+- **Code blocks** with syntax highlighting, line highlights, filenames, and copy buttons
+- **i18n-ready** — locale-prefixed routing, translated UI chrome, and a language switcher built in; add a new language by dropping files into `content/docs/{locale}/`
+
+<Callout type="tip" title="Already familiar with Astro?">
+  Scrollup is a standard Astro project. If you've used Astro before, you'll feel right at home. Content lives in MDX files, configuration is in `astro.config.ts`, and everything builds to static HTML.
+</Callout>
+
+---
+
+## Next steps
+
+<LinkGrid links={[
+  { title: "Installation", description: "Get a documentation site running in under five minutes.", href: "/en/getting-started/installation" },
+  { title: "Project structure", description: "Understand how files and folders map to your documentation.", href: "/en/getting-started/project-structure" },
+  { title: "Markdown & MDX", description: "Learn the content authoring format and available components.", href: "/en/authoring/markdown-and-mdx" },
+  { title: "Colors & typography", description: "Explore the design system and how to customize it.", href: "/en/theming/colors-and-typography" }
+]} />

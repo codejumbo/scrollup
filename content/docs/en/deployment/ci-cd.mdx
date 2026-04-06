@@ -1,0 +1,236 @@
+---
+title: "CI/CD automation"
+description: "Automate your Scrollup builds with GitHub Actions so every push to main deploys your documentation without manual steps."
+section: "Deployment"
+order: 45
+lastUpdated: "2026-04-05"
+---
+
+Scrollup generates a fully static site, so it fits naturally into any CI/CD pipeline. This page covers GitHub Actions — the most common setup — plus notes on other providers.
+
+## GitHub Actions
+
+The workflow below runs on every push to `main`, builds the site, and deploys it. Choose the tab for your target host.
+
+<Tabs labels={["Vercel", "Cloudflare Pages", "GitHub Pages", "Netlify"]}>
+  <Tab index={0}>
+    Vercel handles deployments automatically via its GitHub integration — you don't need a custom workflow. Install the [Vercel GitHub App](https://vercel.com/docs/deployments/git/vercel-for-github) and every push triggers a deploy.
+
+    If you prefer a manual workflow (e.g. to add pre-deploy checks), use the Vercel CLI:
+
+    ```yaml title=".github/workflows/deploy.yml"
+    name: Deploy to Vercel
+
+    on:
+      push:
+        branches: [main]
+
+    jobs:
+      deploy:
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v4
+
+          - uses: actions/setup-node@v4
+            with:
+              node-version: 20
+              cache: npm
+
+          - run: npm ci
+          - run: npm run validate     # type-check + link check
+          - run: npm run build
+
+          - name: Deploy
+            run: npx vercel --prod --token=${{ secrets.VERCEL_TOKEN }}
+            env:
+              VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+              VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    ```
+  </Tab>
+  <Tab index={1}>
+    ```yaml title=".github/workflows/deploy.yml"
+    name: Deploy to Cloudflare Pages
+
+    on:
+      push:
+        branches: [main]
+
+    jobs:
+      deploy:
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v4
+
+          - uses: actions/setup-node@v4
+            with:
+              node-version: 20
+              cache: npm
+
+          - run: npm ci
+          - run: npm run build
+
+          - name: Deploy
+            uses: cloudflare/wrangler-action@v3
+            with:
+              apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+              accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+              command: pages deploy dist/ --project-name=my-docs
+    ```
+  </Tab>
+  <Tab index={2}>
+    ```yaml title=".github/workflows/deploy.yml"
+    name: Deploy to GitHub Pages
+
+    on:
+      push:
+        branches: [main]
+
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+
+    jobs:
+      deploy:
+        runs-on: ubuntu-latest
+        environment:
+          name: github-pages
+          url: ${{ steps.deployment.outputs.page_url }}
+        steps:
+          - uses: actions/checkout@v4
+
+          - uses: actions/setup-node@v4
+            with:
+              node-version: 20
+              cache: npm
+
+          - run: npm ci
+          - run: npm run build
+
+          - uses: actions/upload-pages-artifact@v3
+            with:
+              path: dist/
+
+          - id: deployment
+            uses: actions/deploy-pages@v4
+    ```
+
+    <Callout type="note">
+      Enable GitHub Pages in your repo settings: **Settings → Pages → Source → GitHub Actions**.
+    </Callout>
+  </Tab>
+  <Tab index={3}>
+    Netlify handles deploys automatically via its GitHub integration — no workflow needed. Connect the repo in the Netlify dashboard and set the build command to `npm run build` and publish directory to `dist/`.
+
+    For a manual workflow with pre-deploy validation:
+
+    ```yaml title=".github/workflows/deploy.yml"
+    name: Deploy to Netlify
+
+    on:
+      push:
+        branches: [main]
+
+    jobs:
+      deploy:
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v4
+
+          - uses: actions/setup-node@v4
+            with:
+              node-version: 20
+              cache: npm
+
+          - run: npm ci
+          - run: npm run validate     # type-check + link check
+          - run: npm run build
+
+          - name: Deploy
+            run: npx netlify-cli deploy --prod --dir=dist
+            env:
+              NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+              NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+    ```
+  </Tab>
+</Tabs>
+
+---
+
+## Adding pre-deploy checks
+
+Before deploying, run the built-in validation commands to catch broken links and type errors:
+
+```yaml
+- run: npm run validate   # runs astro check + check-links in sequence
+```
+
+Or run them individually:
+
+```yaml
+- run: npx astro check    # TypeScript / Astro type checking
+- run: npm run check-links   # validates all internal links resolve
+```
+
+See [CLI reference](/en/api-reference/cli) for full details on each command.
+
+---
+
+## Preview deployments
+
+Most platforms support preview URLs for pull requests — builds triggered on branches other than `main` deploy to a unique URL before merging.
+
+<Tabs labels={["Vercel", "Cloudflare Pages", "Netlify"]}>
+  <Tab index={0}>
+    Preview deployments are automatic with Vercel's GitHub integration. Every PR gets a unique `*.vercel.app` URL with no extra configuration.
+  </Tab>
+  <Tab index={1}>
+    Add a second workflow triggered on pull requests:
+
+    ```yaml title=".github/workflows/preview.yml"
+    name: Preview
+
+    on:
+      pull_request:
+        branches: [main]
+
+    jobs:
+      preview:
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v4
+          - uses: actions/setup-node@v4
+            with:
+              node-version: 20
+              cache: npm
+          - run: npm ci && npm run build
+          - uses: cloudflare/wrangler-action@v3
+            with:
+              apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+              accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+              command: pages deploy dist/ --project-name=my-docs --branch=${{ github.head_ref }}
+    ```
+  </Tab>
+  <Tab index={2}>
+    Preview deployments are automatic with Netlify's GitHub integration. Each PR gets a unique `deploy-preview-*.netlify.app` URL.
+  </Tab>
+</Tabs>
+
+---
+
+## Caching dependencies
+
+Add a cache step to speed up repeated builds significantly:
+
+```yaml
+- uses: actions/setup-node@v4
+  with:
+    node-version: 20
+    cache: npm          # caches node_modules between runs
+```
+
+For pnpm or yarn, change `cache: npm` to `cache: pnpm` or `cache: yarn` respectively, and adjust the install command.
+
+<Callout type="tip">
+  Scrollup builds are fast by default — a typical docs site compiles in under 30 seconds. Caching mostly helps when your pipeline runs frequently.
+</Callout>

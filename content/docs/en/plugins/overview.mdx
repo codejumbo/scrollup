@@ -1,0 +1,55 @@
+---
+title: Plugin system overview
+description: Extend Scrollup at build time with the plugin API — inject CSS, head tags, and sidebar items without editing core files.
+section: Plugins
+order: 1
+lastUpdated: '2026-04-06'
+---
+
+Plugins let you extend Scrollup at build time without modifying core files. They run once per build, before pages are rendered, and can contribute CSS, `<head>` tags, and sidebar items to the entire site.
+
+## When to use a plugin
+
+Use a plugin when you need the same change applied to **every page** — analytics scripts, font providers, global CSS, or additional sidebar sections. For per-page changes, use [frontmatter fields](/en/authoring/frontmatter-reference) instead (`head`, `banner`, `sidebar.badge`, etc.).
+
+## Adding a plugin
+
+Plugins are registered in `src/lib/config.ts`:
+
+```ts title="src/lib/config.ts"
+import { analyticsPlugin } from '@/plugins/example-analytics';
+
+export const siteConfig = {
+  // ...
+  plugins: [analyticsPlugin],
+};
+```
+
+Plugins run in array order. If two plugins inject conflicting CSS, the last one wins (CSS cascade).
+
+## What plugins can do
+
+| Method | Effect |
+|---|---|
+| `ctx.addCustomCss(path)` | Appends a CSS file to every page, equivalent to adding an entry to `customCss` in config |
+| `ctx.addHeadTag(tag)` | Injects a `<link>`, `<meta>`, or `<script src>` into `<head>` on every page |
+| `ctx.addSidebarItems(section, items)` | Appends a section and links to the sidebar across all doc pages |
+
+<Callout type="warning">
+**Inline scripts are blocked.** `addHeadTag` rejects `<script>` tags with inline content. Use an external `src` attribute instead. This matches the same restriction on the `head` frontmatter field.
+</Callout>
+
+## Reading config inside a plugin
+
+The `ctx.config` object is a read-only snapshot of `siteConfig` at the time the plugin runs:
+
+```ts
+setup(ctx) {
+  console.log(ctx.config.siteUrl);   // 'https://yoursite.com'
+  console.log(ctx.config.siteName);  // 'My Docs'
+}
+```
+
+## Writing a plugin
+
+See [Writing a plugin](/en/plugins/writing-a-plugin) for a step-by-step guide.

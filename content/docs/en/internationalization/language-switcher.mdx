@@ -1,0 +1,94 @@
+---
+title: "Language switcher"
+description: "How the language switcher works, when it appears, and how to extend it with additional locales or custom display names."
+section: "Internationalization"
+order: 24
+lastUpdated: "2026-04-05"
+---
+
+The language switcher is a globe-icon button in the Topbar that lets readers switch between locales without losing their place. It only appears on pages that have at least one translated counterpart — it stays hidden when a page exists only in one language.
+
+## How it works
+
+At build time, `[...slug].astro` computes whether the current page has siblings in other locales:
+
+```ts
+const allEntries = await getPublishedDocs();
+const siblings = allEntries.filter(
+  (e) => stripLocale(e.id) === stripLocale(entry.id) && getLocale(e.id) !== locale
+);
+```
+
+If `siblings.length > 0`, the switcher renders with links to each sibling. Each link preserves the section and page — clicking "Français" on the English CLI reference takes you to the French CLI reference, not the French homepage.
+
+<Callout type="tip">
+  The switcher is intentionally unobtrusive. It won't appear at all until you've published at least one translated page, so partial translations don't create broken links.
+</Callout>
+
+## Supported locales and display names
+
+Locales and their display names are defined in `src/lib/i18n.ts`:
+
+```ts
+export const SUPPORTED_LOCALES = ['en', 'fr', 'es', 'de', 'ja', 'hi'] as const;
+
+export const LOCALE_NAMES: Record<Locale, string> = {
+  en: 'English',
+  fr: 'Français',
+  es: 'Español',
+  de: 'Deutsch',
+  ja: '日本語',
+  hi: 'हिन्दी',
+};
+```
+
+`LOCALE_NAMES` drives what the switcher shows as the label for each option. The current locale is rendered as plain text (not a link); all others are rendered as links.
+
+## Adding a locale to the switcher
+
+Adding a new locale to the switcher is the same as [adding a new locale](/en/internationalization/adding-a-language#adding-a-new-locale) to the site — once you add it to `SUPPORTED_LOCALES` and `LOCALE_NAMES` and publish at least one page under that locale prefix, the switcher includes it automatically.
+
+## Changing a display name
+
+Edit the `LOCALE_NAMES` entry in `src/lib/i18n.ts`:
+
+```ts
+export const LOCALE_NAMES: Record<Locale, string> = {
+  en: 'English',
+  fr: 'Français (Canada)',   // ← customized label
+  // ...
+};
+```
+
+The updated label appears in the switcher and in the `lang.label` aria-attribute without any other changes.
+
+## Removing a locale
+
+To disable a locale entirely:
+
+1. Remove its code from `SUPPORTED_LOCALES`
+2. Remove its entry from `LOCALE_NAMES`
+3. Remove its translation dictionary from `translations`
+4. Delete or move its content files from `content/docs/{locale}/`
+
+<Callout type="note">
+  TypeScript will catch any remaining references to the removed locale at build time. Run `npx astro check` after making changes to confirm nothing is broken.
+</Callout>
+
+## RTL language support
+
+Scrollup does not automatically apply `dir="rtl"` for right-to-left languages. If you add a RTL locale (Arabic, Hebrew, Persian, etc.), add a CSS override targeting the locale prefix:
+
+```css title="public/custom.css"
+/* Apply RTL layout for Arabic pages */
+html[lang="ar"] {
+  direction: rtl;
+}
+
+html[lang="ar"] .sidebar {
+  /* Adjust sidebar position for RTL */
+  order: 1;
+}
+```
+
+Add the path to `customCss` in `siteConfig` (e.g., `customCss: ['/rtl.css']`). Full RTL layout support is on the roadmap as a built-in feature.

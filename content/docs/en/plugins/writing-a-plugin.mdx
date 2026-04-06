@@ -1,0 +1,123 @@
+---
+title: Writing a plugin
+description: Step-by-step guide to authoring a Scrollup plugin — from the plugin interface to wiring it into your site config.
+section: Plugins
+order: 2
+lastUpdated: '2026-04-06'
+---
+
+A Scrollup plugin is a plain TypeScript object that implements the `ScrollupPlugin` interface. This guide walks through building one from scratch.
+
+## 1. Create the plugin file
+
+Create a file under `src/plugins/`. The filename is just convention — any `.ts` file works.
+
+```ts title="src/plugins/my-plugin.ts"
+import type { ScrollupPlugin } from '@/lib/plugins';
+
+export const myPlugin: ScrollupPlugin = {
+  name: 'my-plugin',
+  setup(ctx) {
+    // your setup logic here
+  },
+};
+```
+
+The `name` field should be unique across all plugins in the site. It appears in console warnings if something goes wrong.
+
+## 2. Use the context methods
+
+The `ctx` object exposes everything a plugin can do:
+
+### Inject CSS
+
+```ts
+setup(ctx) {
+  ctx.addCustomCss('/styles/my-plugin.css');
+}
+```
+
+Place the CSS file in `public/styles/my-plugin.css`. The path is relative to the site root.
+
+### Inject a `<head>` tag
+
+```ts
+setup(ctx) {
+  // A font provider link
+  ctx.addHeadTag({
+    tag: 'link',
+    attrs: {
+      rel: 'preconnect',
+      href: 'https://fonts.googleapis.com',
+    },
+  });
+
+  // An external analytics script
+  ctx.addHeadTag({
+    tag: 'script',
+    attrs: {
+      src: 'https://analytics.example.com/script.js',
+      defer: '',
+    },
+  });
+}
+```
+
+<Callout type="warning">
+Inline script content (`content` field on a `script` tag) is blocked. Only external `src` scripts are allowed.
+</Callout>
+
+### Add sidebar items
+
+```ts
+setup(ctx) {
+  ctx.addSidebarItems('External links', [
+    { label: 'Status page', href: 'https://status.example.com', external: true },
+    { label: 'Changelog', href: 'https://github.com/example/repo/releases', external: true },
+  ]);
+}
+```
+
+This appends a new section to the sidebar. Items with `external: true` open in a new tab and display an arrow indicator.
+
+### Read config
+
+```ts
+setup(ctx) {
+  if (ctx.config.siteUrl.includes('localhost')) return; // skip in dev
+  ctx.addHeadTag({ tag: 'script', attrs: { src: 'https://analytics.example.com/script.js', defer: '' } });
+}
+```
+
+## 3. Register the plugin
+
+Add the plugin to `siteConfig.plugins` in `src/lib/config.ts`:
+
+```ts title="src/lib/config.ts"
+import { myPlugin } from '@/plugins/my-plugin';
+
+export const siteConfig = {
+  // ...
+  plugins: [myPlugin],
+};
+```
+
+The plugin runs automatically on the next `npm run build` or `npm run dev`.
+
+## 4. Async plugins
+
+`setup()` may be async. Scrollup awaits each plugin in order before continuing the build:
+
+```ts
+export const myPlugin: ScrollupPlugin = {
+  name: 'my-async-plugin',
+  async setup(ctx) {
+    const data = await fetch('https://api.example.com/config').then((r) => r.json());
+    ctx.addCustomCss(data.cssPath);
+  },
+};
+```
+
+## Full example
+
+The built-in example plugin at `src/plugins/example-analytics.ts` shows a complete, minimal plugin you can copy as a starting point.

@@ -1,0 +1,275 @@
+---
+import type { NavSection } from '@/lib/navigation';
+import type { TFunction, TranslationKey } from '@/lib/i18n';
+
+interface Props {
+  sections: NavSection[];
+  currentSlug: string;
+  t: TFunction;
+}
+
+const { sections, currentSlug, t } = Astro.props;
+
+function getSectionLabel(rawLabel: string): string {
+  const key = `section.${rawLabel.toLowerCase().replace(/\s+/g, '-')}` as TranslationKey;
+  return t.exists(key) ? t(key) : rawLabel;
+}
+---
+
+<nav class="sidebar" id="sidebar-nav" aria-label={t('sidebar.toggle')}>
+  {sections.map((section) => {
+    const isCurrentSection = section.items.some((item) => item.slug === currentSlug);
+    const displayLabel = getSectionLabel(section.label);
+
+    // Flat sections (top-level config links) render without a collapsible header
+    if (section.flat) {
+      return (
+        <div class="nav-section nav-section--flat">
+          {section.items.map((item) => (
+            <a
+              class:list={['nav-item', 'nav-item--flat', { current: item.slug === currentSlug }]}
+              href={item.href ?? `/${item.slug}`}
+              aria-current={item.slug === currentSlug ? 'page' : undefined}
+              target={item.external ? '_blank' : undefined}
+              rel={item.external ? 'noopener noreferrer' : undefined}
+            >
+              <span class="nav-item-label">{item.sidebarLabel ?? item.title}</span>
+              {item.external && (
+                <svg class="nav-external" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              )}
+              {item.badge && (
+                <span class:list={['nav-badge', item.badge.variant ?? 'default']}>{item.badge.text}</span>
+              )}
+            </a>
+          ))}
+        </div>
+      );
+    }
+
+    return (
+      <div class:list={['nav-section', { open: isCurrentSection }]} data-section data-section-id={section.label}>
+        <button
+          class="nav-label"
+          data-section-toggle
+          aria-expanded={isCurrentSection ? 'true' : 'false'}
+          aria-label={displayLabel}
+        >
+          <svg class="chevron" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 2 7 5 3 8"/></svg>
+          {displayLabel}
+        </button>
+        <div class="nav-items" data-section-items>
+          {section.items.map((item) => (
+            <a
+              class:list={['nav-item', { current: item.slug === currentSlug }]}
+              href={item.href ?? `/${item.slug}`}
+              aria-current={item.slug === currentSlug ? 'page' : undefined}
+              target={item.external ? '_blank' : undefined}
+              rel={item.external ? 'noopener noreferrer' : undefined}
+            >
+              <span class="nav-item-label">{item.sidebarLabel ?? item.title}</span>
+              {item.external && (
+                <svg class="nav-external" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              )}
+              {item.badge && (
+                <span class:list={['nav-badge', item.badge.variant ?? 'default']}>{item.badge.text}</span>
+              )}
+            </a>
+          ))}
+        </div>
+      </div>
+    );
+  })}
+</nav>
+
+<script>
+  const KEY = 'sidebar-collapsed';
+  const abortControllers: AbortController[] = [];
+
+  function getCollapsed(): Set<string> {
+    try {
+      const raw = sessionStorage.getItem(KEY);
+      return raw ? new Set(JSON.parse(raw)) : new Set();
+    } catch {
+      return new Set();
+    }
+  }
+
+  function saveCollapsed(collapsed: Set<string>) {
+    sessionStorage.setItem(KEY, JSON.stringify([...collapsed]));
+  }
+
+  function initSidebar() {
+    // Abort previous listeners to prevent accumulation across page swaps
+    for (const ac of abortControllers) ac.abort();
+    abortControllers.length = 0;
+
+    const collapsed = getCollapsed();
+    const sectionEls = document.querySelectorAll('[data-section]');
+
+    for (const section of sectionEls) {
+      const toggle = section.querySelector('[data-section-toggle]') as HTMLButtonElement;
+      const label = (section as HTMLElement).dataset.sectionId || '';
+      const isOpen = section.classList.contains('open');
+
+      const shouldOpen = isOpen || !collapsed.has(label);
+      section.classList.toggle('open', shouldOpen);
+      toggle?.setAttribute('aria-expanded', String(shouldOpen));
+
+      const ac = new AbortController();
+      abortControllers.push(ac);
+      toggle?.addEventListener('click', () => {
+        const nowOpen = section.classList.toggle('open');
+        toggle.setAttribute('aria-expanded', String(nowOpen));
+        if (nowOpen) {
+          collapsed.delete(label);
+        } else {
+          collapsed.add(label);
+        }
+        saveCollapsed(collapsed);
+      }, { signal: ac.signal });
+    }
+  }
+
+  initSidebar();
+  document.addEventListener('astro:after-swap', initSidebar);
+</script>
+
+<style>
+  .sidebar {
+    position: sticky;
+    top: 52px;
+    height: calc(100vh - 52px);
+    overflow-y: auto;
+    padding: 24px 0 40px;
+    scrollbar-width: none;
+    border-right: 1px solid var(--border-subtle);
+  }
+  .sidebar::-webkit-scrollbar { display: none; }
+
+  .nav-section { margin-bottom: 4px; }
+
+  .nav-label {
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--text-3);
+    padding: 6px 20px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    border: none;
+    background: none;
+    cursor: pointer;
+    transition: color 0.12s;
+  }
+  .nav-label:hover { color: var(--text-2); }
+
+  .chevron {
+    flex-shrink: 0;
+    transition: transform 0.15s;
+  }
+
+  .nav-section.open .chevron {
+    transform: rotate(90deg);
+  }
+
+  .nav-items {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease-out;
+  }
+
+  .nav-section.open .nav-items {
+    max-height: 500px;
+    transition: max-height 0.3s ease-in;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: var(--sans);
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--text-2);
+    text-decoration: none;
+    padding: 5px 20px 5px 36px;
+    transition: color 0.12s;
+  }
+  .nav-item:hover { color: var(--text-1); }
+  .nav-item.current { color: var(--accent); font-weight: 700; }
+
+  .nav-item-label { flex: 1; min-width: 0; }
+
+  .nav-external {
+    flex-shrink: 0;
+    opacity: 0.5;
+    margin-left: 4px;
+  }
+
+  /* Flat section: no collapse header, items at the same indent as regular section labels */
+  .nav-section--flat { margin-bottom: 4px; }
+  .nav-item--flat { padding-left: 20px; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-3); }
+  .nav-item--flat:hover { color: var(--text-2); }
+  .nav-item--flat.current { color: var(--accent); }
+
+  /* Sidebar badge variants */
+  .nav-badge {
+    font-family: var(--sans);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 2px 6px;
+    border-radius: 999px;
+    flex-shrink: 0;
+    margin-left: 6px;
+  }
+  .nav-badge.default {
+    background: var(--bg-surface);
+    color: var(--text-3);
+    border: 1px solid var(--border);
+  }
+  .nav-badge.success {
+    background: color-mix(in srgb, #22c55e 15%, transparent);
+    color: #16a34a;
+    border: 1px solid color-mix(in srgb, #22c55e 30%, transparent);
+  }
+  .nav-badge.warning {
+    background: color-mix(in srgb, #f59e0b 15%, transparent);
+    color: #d97706;
+    border: 1px solid color-mix(in srgb, #f59e0b 30%, transparent);
+  }
+  .nav-badge.info {
+    background: color-mix(in srgb, var(--accent) 15%, transparent);
+    color: var(--accent);
+    border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  }
+
+  :global([data-theme="dark"]) .nav-badge.success { color: #4ade80; }
+  :global([data-theme="dark"]) .nav-badge.warning { color: #fbbf24; }
+
+  /* Mobile: sidebar hidden by default, shown when toggled */
+  @media (max-width: 767px) {
+    .sidebar {
+      display: none;
+      position: fixed;
+      top: 52px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: auto;
+      z-index: 50;
+      background: var(--bg);
+      border-right: none;
+      border-top: 1px solid var(--border-subtle);
+      overflow-y: auto;
+    }
+
+    .sidebar[data-mobile-open] {
+      display: block;
+    }
+  }
+</style>

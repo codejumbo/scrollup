@@ -1,0 +1,57 @@
+---
+import type { NavItem } from '@/lib/navigation';
+import type { TFunction } from '@/lib/i18n';
+
+interface Props {
+  prev: NavItem | null;
+  next: NavItem | null;
+  t: TFunction;
+}
+
+const { prev, next, t } = Astro.props;
+---
+
+{(prev || next) && (
+  <div class="page-links">
+    {prev ? (
+      <a class="page-link" href={prev.href ?? `/${prev.slug}`}>
+        <div class="page-link-label">&larr; {t('nav.prev')}</div>
+        <div class="page-link-title">{prev.title}</div>
+      </a>
+    ) : <div />}
+    {next ? (
+      <a class="page-link next" href={next.href ?? `/${next.slug}`}>
+        <div class="page-link-label">{t('nav.next')} &rarr;</div>
+        <div class="page-link-title">{next.title}</div>
+      </a>
+    ) : <div />}
+  </div>
+)}
+
+<style>
+  .page-links {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 72px;
+    padding-top: 28px;
+    border-top: 1px solid var(--border);
+  }
+
+  .page-link { text-decoration: none; }
+  .page-link-label {
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-3);
+    margin-bottom: 2px;
+  }
+  .page-link-title {
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: -0.01em;
+  }
+  .page-link:hover .page-link-title { text-decoration: underline; }
+  .page-link.next { text-align: right; }
+</style>

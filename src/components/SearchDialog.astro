@@ -1,0 +1,343 @@
+---
+import { useTranslations, normalizeLocale } from '@/lib/i18n';
+
+interface Props {
+  locale?: string;
+}
+const { locale } = Astro.props;
+const t = useTranslations(normalizeLocale(locale));
+---
+<div class="search-overlay" id="search-overlay" inert>
+  <div class="search-backdrop" id="search-backdrop"></div>
+  <div class="search-dialog" role="dialog" aria-label="Search documentation" aria-modal="true">
+    <div class="search-input-wrap">
+      <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input
+        type="text"
+        class="search-input"
+        id="search-input"
+        placeholder={t('search.placeholder')}
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <kbd class="search-esc">Esc</kbd>
+    </div>
+    <div class="search-results" id="search-results">
+      <div
+        class="search-empty"
+        id="search-empty"
+        data-empty={t('search.empty')}
+        data-loading={t('search.loading')}
+        data-noresults={t('search.noResults')}
+      >{t('search.empty')}</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { create, insert, search } from '@orama/orama';
+
+  interface SearchDoc {
+    title: string;
+    description: string;
+    section: string;
+    slug: string;
+    body: string;
+  }
+
+  let db: Awaited<ReturnType<typeof create>> | null = null;
+  let isOpen = false;
+
+  async function initSearch() {
+    if (db) return;
+
+    db = create({
+      schema: {
+        title: 'string',
+        description: 'string',
+        section: 'string',
+        slug: 'string',
+        body: 'string',
+      },
+    });
+
+    try {
+      const res = await fetch('/search-index.json');
+      const docs: SearchDoc[] = await res.json();
+      for (const doc of docs) {
+        insert(db, doc);
+      }
+    } catch {
+      // Search index not yet generated, search will be empty
+    }
+
+    // Re-query with current input in case user typed while index was loading
+    const input = document.getElementById('search-input') as HTMLInputElement;
+    if (input && input.value.trim()) {
+      updateResults(input.value);
+    }
+  }
+
+  function openSearch() {
+    const overlay = document.getElementById('search-overlay')!;
+    const input = document.getElementById('search-input') as HTMLInputElement;
+    overlay.removeAttribute('inert');
+    overlay.classList.add('visible');
+    isOpen = true;
+    input.value = '';
+    input.focus();
+    updateResults('');
+    initSearch();
+  }
+
+  function closeSearch() {
+    const overlay = document.getElementById('search-overlay')!;
+    overlay.setAttribute('inert', '');
+    overlay.classList.remove('visible');
+    isOpen = false;
+  }
+
+  async function updateResults(query: string) {
+    const resultsEl = document.getElementById('search-results')!;
+    const emptyEl = document.getElementById('search-empty')!;
+
+    if (!query.trim()) {
+      emptyEl.textContent = emptyEl.dataset.empty ?? 'Type to search...';
+      emptyEl.style.display = 'block';
+      resultsEl.querySelectorAll('.search-result').forEach((el) => el.remove());
+      return;
+    }
+
+    if (!db) {
+      emptyEl.textContent = emptyEl.dataset.loading ?? 'Loading search index...';
+      emptyEl.style.display = 'block';
+      return;
+    }
+
+    // @ts-ignore — Orama generic depth exceeds TS limit; runtime is correct
+    const results = await search(db, { term: query, limit: 8, tolerance: 1 });
+
+    resultsEl.querySelectorAll('.search-result').forEach((el) => el.remove());
+
+    if (results.hits.length === 0) {
+      emptyEl.textContent = emptyEl.dataset.noresults ?? 'No results found.';
+      emptyEl.style.display = 'block';
+      return;
+    }
+
+    emptyEl.style.display = 'none';
+
+    results.hits.forEach((hit, i) => {
+      const doc = hit.document as unknown as SearchDoc;
+      const el = document.createElement('a');
+      el.className = 'search-result';
+      if (i === 0) el.classList.add('active');
+      el.href = `/${doc.slug}`;
+      const sectionDiv = document.createElement('div');
+      sectionDiv.className = 'sr-section';
+      sectionDiv.textContent = doc.section;
+      const titleDiv = document.createElement('div');
+      titleDiv.className = 'sr-title';
+      titleDiv.textContent = doc.title;
+      const descDiv = document.createElement('div');
+      descDiv.className = 'sr-desc';
+      descDiv.textContent = doc.description;
+      el.append(sectionDiv, titleDiv, descDiv);
+      resultsEl.appendChild(el);
+    });
+  }
+
+  // Keyboard navigation — use a named function so we can remove it on swap
+  function handleKeydown(e: KeyboardEvent) {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      e.preventDefault();
+      if (isOpen) closeSearch();
+      else openSearch();
+    }
+
+    if (e.key === 'Escape' && isOpen) {
+      closeSearch();
+    }
+
+    if (!isOpen) return;
+
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      const results = document.querySelectorAll('.search-result');
+      if (results.length === 0) return;
+
+      const activeIdx = Array.from(results).findIndex((r) => r.classList.contains('active'));
+      results.forEach((r) => r.classList.remove('active'));
+
+      let newIdx: number;
+      if (e.key === 'ArrowDown') {
+        newIdx = activeIdx < results.length - 1 ? activeIdx + 1 : 0;
+      } else {
+        newIdx = activeIdx > 0 ? activeIdx - 1 : results.length - 1;
+      }
+      results[newIdx].classList.add('active');
+      results[newIdx].scrollIntoView({ block: 'nearest' });
+    }
+
+    if (e.key === 'Enter') {
+      const active = document.querySelector('.search-result.active') as HTMLAnchorElement;
+      if (active) {
+        closeSearch();
+        window.location.href = active.href;
+      }
+    }
+  }
+
+  function handleSearchInput(e: Event) {
+    const query = (e.target as HTMLInputElement).value;
+    updateResults(query);
+  }
+
+  function bindListeners() {
+    document.addEventListener('keydown', handleKeydown);
+    document.getElementById('search-backdrop')?.addEventListener('click', closeSearch);
+    document.getElementById('search-trigger')?.addEventListener('click', openSearch);
+    document.addEventListener('open-search', openSearch);
+    document.getElementById('search-input')?.addEventListener('input', handleSearchInput);
+  }
+
+  function unbindListeners() {
+    document.removeEventListener('keydown', handleKeydown);
+    document.removeEventListener('open-search', openSearch);
+  }
+
+  bindListeners();
+
+  // Re-bind after View Transitions swap (DOM elements are replaced)
+  document.addEventListener('astro:after-swap', () => {
+    unbindListeners();
+    isOpen = false;
+    bindListeners();
+  });
+</script>
+
+<style>
+  .search-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 120px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s;
+  }
+  .search-overlay.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .search-backdrop {
+    position: absolute;
+    inset: 0;
+    background: color-mix(in srgb, var(--bg) 70%, transparent);
+    backdrop-filter: blur(8px);
+  }
+
+  .search-dialog {
+    position: relative;
+    width: 560px;
+    max-height: 440px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .search-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .search-icon { color: var(--text-3); flex-shrink: 0; }
+
+  .search-input {
+    flex: 1;
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-1);
+    background: none;
+    border: none;
+    outline: none;
+  }
+  .search-input::placeholder { color: var(--text-3); }
+
+  .search-esc {
+    font-family: var(--sans);
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text-3);
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 1px 5px;
+    flex-shrink: 0;
+  }
+
+  .search-results {
+    overflow-y: auto;
+    padding: 8px;
+    flex: 1;
+  }
+
+  .search-empty {
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--text-3);
+    text-align: center;
+    padding: 32px 0;
+  }
+
+  .search-results :global(.search-result) {
+    display: block;
+    padding: 10px 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background 0.1s;
+  }
+  .search-results :global(.search-result:hover),
+  .search-results :global(.search-result.active) {
+    background: var(--bg-surface);
+  }
+
+  .search-results :global(.sr-section) {
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 2px;
+  }
+  .search-results :global(.sr-title) {
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-1);
+    letter-spacing: -0.01em;
+  }
+  .search-results :global(.sr-desc) {
+    font-family: var(--sans);
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--text-3);
+    line-height: 1.4;
+    margin-top: 2px;
+  }
+</style>

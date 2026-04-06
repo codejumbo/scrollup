@@ -1,0 +1,93 @@
+---
+title: "Frontmatter schema"
+description: "Every MDX page requires frontmatter metadata. Learn the required and optional fields that control how your page appears in navigation and search."
+section: "Authoring"
+order: 15
+lastUpdated: "2026-04-04"
+---
+
+Every `.mdx` file in `content/docs/` must include a YAML frontmatter block at the top. The schema is validated at build time using Zod, so missing or invalid fields produce clear error messages.
+
+## Required fields
+
+| Field | Type | Description |
+|---|---|---|
+| `title` | `string` | Page title. Used in the sidebar, browser tab, and `<h1>` if your layout renders it. |
+| `description` | `string` | Short summary. Used in meta tags and search results. |
+| `section` | `string` | The sidebar group this page belongs to (e.g., `"Getting started"`, `"Authoring"`). Must match a key in `SECTION_ORDER` in `src/lib/navigation.ts`. |
+| `order` | `number` | Sort position within the section. Lower numbers appear first. |
+
+```yaml title="Minimal frontmatter"
+---
+title: "My page"
+description: "A short description of what this page covers."
+section: "Getting started"
+order: 5
+---
+```
+
+## Optional fields
+
+| Field | Type | Default | Description |
+|---|---|---|---|
+| `draft` | `boolean` | `false` | When `true`, the page is excluded from the build. |
+| `deprecated` | `boolean` | `false` | When `true`, a deprecation notice is shown. |
+| `lastUpdated` | `string` | — | ISO date string (e.g., `"2025-03-15"`). Displayed as a "last updated" note. |
+| `author` | `string` | — | Author name, shown in the page metadata. |
+| `tags` | `string[]` | — | Keywords for categorization and search. |
+
+```yaml title="Full frontmatter example"
+---
+title: "Advanced configuration"
+description: "Fine-tune every aspect of your documentation site."
+section: "Getting started"
+order: 5
+lastUpdated: "2025-03-15"
+author: "Jane Doe"
+tags: ["config", "advanced"]
+draft: false
+deprecated: false
+---
+```
+
+## Schema definition
+
+The schema is defined in `src/content.config.ts` using Zod:
+
+```ts title="src/content.config.ts"
+const docs = defineCollection({
+  loader: glob({ pattern: '**/*.mdx', base: './content/docs' }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    section: z.string(),
+    order: z.number(),
+    lastUpdated: z.string().optional(),
+    author: z.string().optional(),
+    tags: z.array(z.string()).optional(),
+    draft: z.boolean().optional().default(false),
+    deprecated: z.boolean().optional().default(false),
+  }),
+});
+```
+
+<Callout type="tip">
+  If you add a new field to the schema, Astro will validate it at build time. Any `.mdx` file that doesn't match the updated schema will produce a build error with the exact file path and field name.
+</Callout>
+
+## Section ordering
+
+Pages are grouped by their `section` value. The display order of sections in the sidebar is controlled by `SECTION_ORDER` in `src/lib/navigation.ts`. Within each section, pages are sorted by their `order` field.
+
+To add a new section, add an entry to the `SECTION_ORDER` object:
+
+```ts title="src/lib/navigation.ts"
+const SECTION_ORDER: Record<string, number> = {
+  'Getting started': 0,
+  'Authoring': 1,
+  'Theming': 2,
+  'API reference': 3,
+  'Deployment': 4,
+  'My new section': 5,  // Add your section here
+};
+```

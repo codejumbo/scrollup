@@ -1,0 +1,41 @@
+---
+title: "Link grids"
+description: "Guide readers to related pages with clean, navigational card grids."
+section: "Authoring"
+order: 14
+lastUpdated: "2026-04-04"
+---
+
+Link grids are navigational elements that guide readers to related pages. They appear as a 2-column grid of cards with titles and short descriptions, creating clear pathways through your documentation.
+
+## Usage
+
+Import the `LinkGrid` component and pass an array of link objects:
+
+```mdx title="example.mdx"
+import LinkGrid from '@/components/mdx/LinkGrid.astro';
+
+<LinkGrid links={[
+  { title: "Installation", description: "Get started quickly.", href: "/en/getting-started/installation" },
+  { title: "Configuration", description: "Customize your site.", href: "/en/getting-started/configuration" },
+]} />
+```
+
+## Example
+
+<LinkGrid links={[
+  { title: "Introduction", description: "Learn what Scrollup is and why it exists.", href: "/en/getting-started/introduction" },
+  { title: "Installation", description: "Get a site running in under five minutes.", href: "/en/getting-started/installation" },
+  { title: "Code blocks", description: "Syntax highlighting and copy buttons.", href: "/en/authoring/code-blocks" },
+  { title: "Dark mode", description: "Hand-picked colors for comfortable reading.", href: "/en/theming/dark-mode" }
+]} />
+
+## Design details
+
+Link grids use a subtle visual trick: the grid itself has a background color matching the border, and each card has the page background color. The 1-pixel gap between cards creates clean divider lines without any explicit border elements.
+
+On hover, cards transition to the surface background color, providing a gentle acknowledgment without being distracting.
+
+<Callout type="tip" title="When to use link grids">
+  Place link grids at the end of a page to suggest logical next steps, or at the beginning of a section landing page to overview its contents. Avoid using them inline within explanatory text — they work best as dedicated navigation waypoints.
+</Callout>

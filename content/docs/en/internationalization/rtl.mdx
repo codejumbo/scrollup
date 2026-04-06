@@ -1,0 +1,44 @@
+---
+title: "RTL support"
+description: "Right-to-left layout support for Arabic, Hebrew, and other RTL languages — planned for a future release."
+section: "Internationalization"
+order: 26
+lastUpdated: "2026-04-06"
+---
+
+import { Callout } from '@/components/mdx';
+
+<Callout type="warning">
+RTL layout support is planned but not yet implemented. This page documents the intended design so you know what's coming and what to prepare for.
+</Callout>
+
+## Planned behavior
+
+When RTL support ships, adding an RTL locale (Arabic, Hebrew, etc.) will automatically:
+
+- Set `dir="rtl"` on the `<html>` element for that locale
+- Flip the three-column layout so the sidebar appears on the right
+- Mirror all directional CSS using logical properties (`padding-inline-start` instead of `padding-left`, etc.)
+
+The implementation will be driven by a `RTL_LOCALES` constant in `src/lib/i18n.ts`. Any locale in that list gets `dir="rtl"` from the `TFunction.dir()` method.
+
+## What you can do now
+
+If you need RTL support before it's implemented in Scrollup:
+
+1. Add `dir="rtl"` manually to `DocsLayout.astro`'s `<html>` tag for your locale
+2. Add a `customCss` entry that overrides the directional properties you need
+3. Submit a [GitHub issue](https://github.com/codejumbo/scrollup/issues) to track your use case
+
+## Implementation scope (when it ships)
+
+The RTL sweep will touch ~15 files and replace:
+
+| Current property | Logical equivalent |
+|---|---|
+| `padding-left` / `padding-right` | `padding-inline-start` / `padding-inline-end` |
+| `margin-left` / `margin-right` | `margin-inline-start` / `margin-inline-end` |
+| `border-left` / `border-right` | `border-inline-start` / `border-inline-end` |
+| `left` / `right` (positioning) | `inset-inline-start` / `inset-inline-end` |
+
+The three-column grid in `DocsLayout` will use named grid areas so RTL browsers flip sidebar placement automatically.

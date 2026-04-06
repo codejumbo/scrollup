@@ -1,0 +1,117 @@
+---
+interface Props {
+  labels: string[];
+  syncKey?: string;
+}
+
+const { labels, syncKey } = Astro.props;
+const id = `tabs-${Math.random().toString(36).slice(2, 8)}`;
+---
+
+<div class="tab-set" data-tab-set={id} data-sync-key={syncKey}>
+  <div class="tab-bar">
+    {labels.map((label, i) => (
+      <button
+        class:list={['tab-trigger', { on: i === 0 }]}
+        data-tab-index={i}
+      >
+        {label}
+      </button>
+    ))}
+  </div>
+  <slot />
+</div>
+
+<script>
+  // Global sync listener is registered once and survives view transitions
+  let syncListenerRegistered = false;
+
+  function activateTab(tabSet: Element, index: number) {
+    const triggers = tabSet.querySelectorAll('.tab-trigger');
+    const panels = tabSet.querySelectorAll('.tab-content');
+    triggers.forEach((t) => t.classList.remove('on'));
+    panels.forEach((p) => p.classList.remove('on'));
+    const trigger = tabSet.querySelector(`.tab-trigger[data-tab-index="${index}"]`);
+    const panel = tabSet.querySelector(`.tab-content[data-tab-index="${index}"]`);
+    if (trigger) trigger.classList.add('on');
+    if (panel) panel.classList.add('on');
+  }
+
+  function initTabs() {
+    document.querySelectorAll('.tab-set:not([data-initialized])').forEach((tabSet) => {
+      tabSet.setAttribute('data-initialized', '');
+      const triggers = tabSet.querySelectorAll('.tab-trigger');
+
+      // Restore saved syncKey state
+      const syncKey = (tabSet as HTMLElement).dataset.syncKey;
+      if (syncKey) {
+        const saved = localStorage.getItem(`tab-sync-${syncKey}`);
+        if (saved !== null) {
+          const idx = parseInt(saved, 10);
+          if (!isNaN(idx)) activateTab(tabSet, idx);
+        }
+      }
+
+      triggers.forEach((trigger) => {
+        trigger.addEventListener('click', () => {
+          const index = parseInt(trigger.getAttribute('data-tab-index') ?? '0', 10);
+          activateTab(tabSet, index);
+
+          // Sync all tab-sets sharing this key
+          if (syncKey) {
+            localStorage.setItem(`tab-sync-${syncKey}`, String(index));
+            document.dispatchEvent(new CustomEvent('tab-sync', { detail: { syncKey, index } }));
+          }
+        });
+      });
+    });
+
+    // Register global sync listener once
+    if (!syncListenerRegistered) {
+      syncListenerRegistered = true;
+      document.addEventListener('tab-sync', (e) => {
+        const { syncKey, index } = (e as CustomEvent<{ syncKey: string; index: number }>).detail;
+        document.querySelectorAll<HTMLElement>(`.tab-set[data-sync-key="${syncKey}"]`).forEach((ts) => {
+          activateTab(ts, index);
+        });
+      });
+    }
+  }
+
+  initTabs();
+  document.addEventListener('astro:after-swap', initTabs);
+</script>
+
+<style>
+  .tab-set { margin: 28px 0; }
+
+  .tab-bar {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .tab-trigger {
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-3);
+    background: none;
+    border: none;
+    padding: 8px 16px 10px;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.12s;
+  }
+  .tab-trigger:hover { color: var(--text-2); }
+  .tab-trigger.on { color: var(--text-1); }
+  .tab-trigger.on::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 16px;
+    right: 16px;
+    height: 1.5px;
+    background: var(--text-1);
+    border-radius: 1px;
+  }
+</style>

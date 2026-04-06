@@ -1,0 +1,133 @@
+---
+interface HeroAction {
+  label: string;
+  href: string;
+  variant?: 'primary' | 'secondary';
+  external?: boolean;
+}
+
+interface HeroImage {
+  src: string;
+  alt?: string;
+}
+
+interface Props {
+  hero: {
+    title?: string;
+    tagline?: string;
+    image?: HeroImage;
+    actions?: HeroAction[];
+  };
+}
+
+const { hero } = Astro.props;
+const hasImage = !!hero.image;
+---
+
+<div class:list={['hero', { 'has-image': hasImage }]}>
+  <div class="hero-content">
+    {hero.title && <h1 class="hero-title">{hero.title}</h1>}
+    {hero.tagline && <p class="hero-tagline">{hero.tagline}</p>}
+    {hero.actions && hero.actions.length > 0 && (
+      <div class="hero-actions">
+        {hero.actions.map((action) => (
+          <a
+            class:list={['hero-btn', action.variant ?? 'primary']}
+            href={action.href}
+            target={action.external ? '_blank' : undefined}
+            rel={action.external ? 'noopener noreferrer' : undefined}
+          >
+            {action.label}
+            {action.external && <span aria-hidden="true">↗</span>}
+          </a>
+        ))}
+      </div>
+    )}
+  </div>
+  {hasImage && (
+    <div class="hero-image">
+      <img src={hero.image!.src} alt={hero.image!.alt ?? ''} />
+    </div>
+  )}
+</div>
+
+<style>
+  .hero {
+    padding: 64px 0 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .hero.has-image {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 48px;
+  }
+
+  .hero-title {
+    font-family: var(--sans);
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--text-1);
+    line-height: 1.1;
+    margin: 0 0 16px;
+  }
+
+  .hero-tagline {
+    font-family: var(--serif);
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    color: var(--text-2);
+    line-height: 1.6;
+    margin: 0 0 32px;
+    max-width: 560px;
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .hero-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 600;
+    padding: 10px 22px;
+    border-radius: var(--radius);
+    text-decoration: none;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+  .hero-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+  .hero-btn:active { transform: translateY(0); }
+
+  .hero-btn.primary {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .hero-btn.secondary {
+    background: var(--bg-surface);
+    color: var(--text-1);
+    border: 1px solid var(--border);
+  }
+
+  .hero-image img {
+    width: 100%;
+    height: auto;
+    border-radius: calc(var(--radius) * 2);
+    border: 1px solid var(--border-subtle);
+  }
+
+  @media (max-width: 767px) {
+    .hero.has-image {
+      grid-template-columns: 1fr;
+    }
+    .hero-image { order: -1; }
+  }
+</style>

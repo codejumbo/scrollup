@@ -1,0 +1,153 @@
+---
+title: "Built-in components"
+description: "Scrollup includes MDX components for callouts, badges, steps, tabs, link grids, cards, file trees, buttons, and API endpoints. Import and use them directly in your content."
+section: "Authoring"
+order: 16
+lastUpdated: "2026-04-05"
+---
+
+All components live in `src/components/mdx/` and are imported directly in your `.mdx` files. No registration or configuration required.
+
+Additional components are documented on their own pages: [File tree](/en/authoring/file-tree), [Cards](/en/authoring/cards), [Link buttons](/en/authoring/link-buttons), and [Advanced components](/en/authoring/advanced-components).
+
+## Callout
+
+Styled aside boxes for notes, warnings, and tips.
+
+**Props:** `type` (`'note'` | `'warning'` | `'tip'`, default `'note'`), `title` (optional, defaults to the type name).
+
+```text
+<Callout type="tip" title="Pro tip">
+  You can nest any MDX content inside a callout.
+</Callout>
+```
+
+<Callout type="tip" title="Pro tip">
+  You can nest any MDX content inside a callout.
+</Callout>
+
+<Callout type="warning">
+  This is a warning callout with the default title.
+</Callout>
+
+## Badge
+
+Inline label pills for status indicators.
+
+**Props:** `text` (required), `variant` (`'default'` | `'success'` | `'warning'` | `'info'`, default `'default'`).
+
+```text
+<Badge text="Stable" variant="success" />
+<Badge text="Beta" variant="info" />
+<Badge text="Deprecated" variant="warning" />
+```
+
+<Badge text="Stable" variant="success" /> <Badge text="Beta" variant="info" /> <Badge text="Deprecated" variant="warning" />
+
+## Steps and Step
+
+Numbered step sequences for tutorials and guides.
+
+**Steps props:** None (pure wrapper). **Step props:** `num` (required number), `title` (required string).
+
+```text
+<Steps>
+  <Step num={1} title="Install dependencies">
+    Run `npm install` in the project root.
+  </Step>
+  <Step num={2} title="Start the dev server">
+    Run `npm run dev` to launch at localhost:4321.
+  </Step>
+</Steps>
+```
+
+<Steps>
+  <Step num={1} title="Install dependencies">
+    Run `npm install` in the project root.
+  </Step>
+  <Step num={2} title="Start the dev server">
+    Run `npm run dev` to launch at localhost:4321.
+  </Step>
+</Steps>
+
+## Tabs and Tab
+
+Tabbed content panels for package managers, platforms, or language variants.
+
+**Tabs props:** `labels` (required string array). **Tab props:** `index` (required number matching position in labels).
+
+````text
+<Tabs labels={["npm", "pnpm", "yarn"]}>
+  <Tab index={0}>
+    ```sh
+    npm install my-library
+    ```
+  </Tab>
+  <Tab index={1}>
+    ```sh
+    pnpm add my-library
+    ```
+  </Tab>
+  <Tab index={2}>
+    ```sh
+    yarn add my-library
+    ```
+  </Tab>
+</Tabs>
+````
+
+<Tabs labels={["npm", "pnpm", "yarn"]}>
+  <Tab index={0}>
+    ```sh title="Terminal"
+    npm install my-library
+    ```
+  </Tab>
+  <Tab index={1}>
+    ```sh title="Terminal"
+    pnpm add my-library
+    ```
+  </Tab>
+  <Tab index={2}>
+    ```sh title="Terminal"
+    yarn add my-library
+    ```
+  </Tab>
+</Tabs>
+
+## LinkGrid
+
+A responsive grid of linked cards with titles and descriptions.
+
+**Props:** `links` (required array of `{ title: string, description: string, href: string }`).
+
+```text
+<LinkGrid links={[
+  { title: "Installation", description: "Get up and running.", href: "/en/getting-started/installation" },
+  { title: "Configuration", description: "Customize your site.", href: "/en/getting-started/configuration" },
+]} />
+```
+
+<LinkGrid links={[
+  { title: "Installation", description: "Get up and running.", href: "/en/getting-started/installation" },
+  { title: "Configuration", description: "Customize your site.", href: "/en/getting-started/configuration" },
+]} />
+
+## ApiEndpoint
+
+Formatted HTTP endpoint blocks with color-coded method badges.
+
+**Props:** `method` (`'GET'` | `'POST'` | `'PUT'` | `'PATCH'` | `'DELETE'`, required), `path` (required string), `description` (optional string).
+
+```text
+<ApiEndpoint method="GET" path="/v1/documents/:id" description="Retrieve a document by ID.">
+  Returns the full document object including metadata and content.
+</ApiEndpoint>
+```
+
+<ApiEndpoint method="GET" path="/v1/documents/:id" description="Retrieve a document by ID.">
+  Returns the full document object including metadata and content.
+</ApiEndpoint>
+
+<ApiEndpoint method="POST" path="/v1/documents" description="Create a new document.">
+  Accepts a JSON body with `title` and `content` fields.
+</ApiEndpoint>

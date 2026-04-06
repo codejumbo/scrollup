@@ -1,0 +1,151 @@
+---
+title: "Icon"
+description: "Inline SVG icons from a built-in icon set — use in headings, callouts, cards, and prose."
+section: "Authoring"
+order: 22
+lastUpdated: "2026-04-05"
+---
+
+import { Icon, Callout, CardGrid, Card } from '@/components/mdx';
+
+The `<Icon>` component renders a single SVG icon inline. Icons are bundled — no CDN requests, no flicker.
+
+## Usage
+
+```mdx
+import { Icon } from '@/components/mdx';
+
+<Icon name="rocket" />
+<Icon name="rocket" size={24} />
+<Icon name="rocket" size={32} class="my-icon" />
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `name` | `string` | — | Icon name (required). See the full list below. |
+| `size` | `number` | `16` | Width and height in pixels |
+| `class` | `string` | — | Additional CSS class |
+
+## Available icons
+
+<CardGrid cols={3}>
+  <Card>
+    <Icon name="arrow-right" size={18} /> `arrow-right`
+  </Card>
+  <Card>
+    <Icon name="arrow-left" size={18} /> `arrow-left`
+  </Card>
+  <Card>
+    <Icon name="check" size={18} /> `check`
+  </Card>
+  <Card>
+    <Icon name="x" size={18} /> `x`
+  </Card>
+  <Card>
+    <Icon name="warning" size={18} /> `warning`
+  </Card>
+  <Card>
+    <Icon name="info" size={18} /> `info`
+  </Card>
+  <Card>
+    <Icon name="external-link" size={18} /> `external-link`
+  </Card>
+  <Card>
+    <Icon name="github" size={18} /> `github`
+  </Card>
+  <Card>
+    <Icon name="book" size={18} /> `book`
+  </Card>
+  <Card>
+    <Icon name="code" size={18} /> `code`
+  </Card>
+  <Card>
+    <Icon name="terminal" size={18} /> `terminal`
+  </Card>
+  <Card>
+    <Icon name="settings" size={18} /> `settings`
+  </Card>
+  <Card>
+    <Icon name="download" size={18} /> `download`
+  </Card>
+  <Card>
+    <Icon name="upload" size={18} /> `upload`
+  </Card>
+  <Card>
+    <Icon name="search" size={18} /> `search`
+  </Card>
+  <Card>
+    <Icon name="lock" size={18} /> `lock`
+  </Card>
+  <Card>
+    <Icon name="unlock" size={18} /> `unlock`
+  </Card>
+  <Card>
+    <Icon name="copy" size={18} /> `copy`
+  </Card>
+  <Card>
+    <Icon name="check-circle" size={18} /> `check-circle`
+  </Card>
+  <Card>
+    <Icon name="alert-circle" size={18} /> `alert-circle`
+  </Card>
+  <Card>
+    <Icon name="alert-triangle" size={18} /> `alert-triangle`
+  </Card>
+  <Card>
+    <Icon name="chevron-right" size={18} /> `chevron-right`
+  </Card>
+  <Card>
+    <Icon name="chevron-down" size={18} /> `chevron-down`
+  </Card>
+  <Card>
+    <Icon name="home" size={18} /> `home`
+  </Card>
+  <Card>
+    <Icon name="folder" size={18} /> `folder`
+  </Card>
+  <Card>
+    <Icon name="file" size={18} /> `file`
+  </Card>
+  <Card>
+    <Icon name="globe" size={18} /> `globe`
+  </Card>
+  <Card>
+    <Icon name="mail" size={18} /> `mail`
+  </Card>
+  <Card>
+    <Icon name="link" size={18} /> `link`
+  </Card>
+  <Card>
+    <Icon name="star" size={18} /> `star`
+  </Card>
+  <Card>
+    <Icon name="rocket" size={18} /> `rocket`
+  </Card>
+  <Card>
+    <Icon name="puzzle" size={18} /> `puzzle`
+  </Card>
+  <Card>
+    <Icon name="lightning" size={18} /> `lightning`
+  </Card>
+</CardGrid>
+
+<Callout type="note">
+If you request an unknown icon name, nothing is rendered. In `npm run dev`, a warning is logged to the console listing all valid names.
+</Callout>
+
+## Inline use
+
+Icons are `inline-flex` and respect `currentColor`, so they inherit the surrounding text color:
+
+```mdx
+<Icon name="check-circle" size={18} /> All systems operational
+
+<Icon name="warning" size={18} /> Proceed with caution
+```
+
+<Icon name="check-circle" size={18} /> All systems operational
+
+<Icon name="warning" size={18} /> Proceed with caution

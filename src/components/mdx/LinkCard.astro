@@ -1,0 +1,76 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+  href: string;
+  external?: boolean;
+}
+
+const { title, description, href, external = false } = Astro.props;
+const target = external ? '_blank' : undefined;
+const rel = external ? 'noopener noreferrer' : undefined;
+---
+
+<a class="link-card" href={href} target={target} rel={rel}>
+  <div class="link-card-body">
+    <div class="link-card-title">{title}{external && <span class="link-card-external" aria-label="(opens in new tab)">↗</span>}</div>
+    {description && <div class="link-card-description">{description}</div>}
+  </div>
+  <svg class="link-card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+</a>
+
+<style>
+  .link-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    text-decoration: none;
+    transition: border-color 0.15s, background 0.15s, transform 0.1s;
+  }
+  .link-card:hover {
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 5%, var(--bg-surface));
+    transform: translateY(-1px);
+  }
+
+  .link-card-body { flex: 1; min-width: 0; }
+
+  .link-card-title {
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-1);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .link-card-external {
+    font-size: 11px;
+    color: var(--text-3);
+  }
+
+  .link-card-description {
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--text-3);
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .link-card-arrow {
+    flex-shrink: 0;
+    color: var(--text-3);
+    transition: transform 0.15s, color 0.15s;
+  }
+  .link-card:hover .link-card-arrow {
+    transform: translateX(4px);
+    color: var(--accent);
+  }
+</style>

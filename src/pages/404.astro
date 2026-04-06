@@ -1,0 +1,88 @@
+---
+import '@/styles/global.css';
+import { ClientRouter } from 'astro:transitions';
+import Topbar from '@/components/Topbar.astro';
+import Footer from '@/components/Footer.astro';
+import ThemeInit from '@/components/ThemeInit.astro';
+import { useTranslations } from '@/lib/i18n';
+import { globalHeadTags } from '@/lib/resolved-config';
+
+const t = useTranslations('en');
+const escapeAttr = (v: string) => v.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{t('404.title')}</title>
+  {globalHeadTags.map((tag) => (
+    <Fragment set:html={`<${tag.tag}${Object.entries(tag.attrs ?? {}).map(([k, v]) => ` ${k}="${escapeAttr(v)}"`).join('')}>${tag.content ?? ''}</${tag.tag}>`} />
+  ))}
+  <ClientRouter />
+  <ThemeInit />
+</head>
+<body>
+  <Topbar />
+  <main class="not-found" id="main-content">
+    <div class="not-found-inner">
+      <p class="not-found-code">404</p>
+      <h1 class="not-found-title">{t('404.title')}</h1>
+      <a class="not-found-back" href="/">{t('404.back')}</a>
+    </div>
+  </main>
+  <Footer />
+</body>
+</html>
+
+<style>
+  .not-found {
+    min-height: 100vh;
+    padding-top: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .not-found-inner {
+    text-align: center;
+    padding: 40px 20px;
+  }
+
+  .not-found-code {
+    font-family: var(--sans);
+    font-size: 80px;
+    font-weight: 900;
+    color: var(--accent);
+    opacity: 0.25;
+    line-height: 1;
+    margin: 0 0 8px;
+    letter-spacing: -0.05em;
+  }
+
+  .not-found-title {
+    font-family: var(--sans);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-1);
+    margin: 0 0 24px;
+    letter-spacing: -0.02em;
+  }
+
+  .not-found-back {
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--accent);
+    text-decoration: none;
+    padding: 10px 22px;
+    border: 1px solid var(--accent);
+    border-radius: var(--radius);
+    transition: background 0.15s, color 0.15s;
+  }
+  .not-found-back:hover {
+    background: var(--accent);
+    color: #fff;
+  }
+</style>

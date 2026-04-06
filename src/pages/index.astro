@@ -1,0 +1,1209 @@
+---
+import '@/styles/global.css';
+import { ClientRouter } from 'astro:transitions';
+import Topbar from '@/components/Topbar.astro';
+import SearchDialog from '@/components/SearchDialog.astro';
+import ThemeInit from '@/components/ThemeInit.astro';
+import SEOHead from '@/components/SEOHead.astro';
+import Footer from '@/components/Footer.astro';
+import { getSiteName, socialIcons } from '@/lib/config';
+import { resolvedConfig as siteConfig, globalHeadTags } from '@/lib/resolved-config';
+
+const extLinkIcon = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
+const escapeAttr = (v: string) => v.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content={`${getSiteName('en')} — ${siteConfig.description}`} />
+  <link rel="icon" type="image/svg+xml" href={siteConfig.favicon} />
+  <title>{getSiteName('en')}</title>
+  <SEOHead title={getSiteName('en')} description={siteConfig.description} url={siteConfig.siteUrl} />
+  {siteConfig.customCss.map((href) => <link rel="stylesheet" href={href} />)}
+  {globalHeadTags.map((tag) => (
+    <Fragment set:html={`<${tag.tag}${Object.entries(tag.attrs ?? {}).map(([k, v]) => ` ${k}="${escapeAttr(v)}"`).join('')}>${tag.content ?? ''}</${tag.tag}>`} />
+  ))}
+  <ClientRouter />
+  <ThemeInit />
+</head>
+<body>
+  <Topbar variant="branded" hideSearch />
+  <SearchDialog />
+
+  <main class="landing">
+
+    <!-- Hero Banner -->
+    <section class="hero">
+      <div class="hero-bg">
+        <div class="hero-grid"></div>
+      </div>
+      <div class="hero-content">
+        <div class="hero-badge">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+          Open source · MIT License
+        </div>
+        <h1>Beautiful Documentation,<br/>Effortlessly</h1>
+        <p class="hero-sub">
+          An open-source documentation framework built on Astro.
+          Write in MDX, customize with tokens, and ship fast — with full-text search,
+          dark mode, i18n-ready routing, and a polished reading experience out of the box.
+        </p>
+        <div class="hero-actions">
+          <a href="/en/getting-started/introduction" class="btn-primary">Get started</a>
+          <a href="/en/getting-started/installation" class="btn-secondary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+            Quick setup
+          </a>
+        </div>
+        <div class="hero-search" id="hero-search-trigger">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <span>Search documentation...</span>
+          <kbd>⌘K</kbd>
+        </div>
+        <script is:inline>
+          document.getElementById('hero-search-trigger')?.addEventListener('click', function() {
+            document.dispatchEvent(new CustomEvent('open-search'));
+          });
+        </script>
+      </div>
+    </section>
+
+    <!-- Feature Highlights -->
+    <section class="features">
+      <div class="features-inner">
+
+        <div class="features-header">
+          <h2>Everything you need. Nothing you don't.</h2>
+          <p>Built for developers and technical writers who want beautiful, fast documentation without fighting the tool.</p>
+        </div>
+
+        <div class="features-bento">
+
+          <!-- MDX — hero card, spans 2 cols -->
+          <div class="feat feat-mdx">
+            <div class="feat-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            </div>
+            <h3>Write in MDX</h3>
+            <p>Full Markdown and JSX component support. Drop in callouts, tabs, steps, accordions, and code blocks directly in your content — no plugins to configure.</p>
+            <div class="feat-code-preview" aria-hidden="true">
+              <div class="fcp-chrome">
+                <span class="fcp-dot"></span><span class="fcp-dot"></span><span class="fcp-dot"></span>
+                <span class="fcp-filename">getting-started.mdx</span>
+              </div>
+              <div class="fcp-body">
+                <div class="fcp-line"><span class="fcp-tag">&lt;Callout</span> <span class="fcp-attr">type</span><span class="fcp-eq">=</span><span class="fcp-str">"tip"</span><span class="fcp-tag">&gt;</span></div>
+                <div class="fcp-line fcp-indent"><span class="fcp-text">Run </span><span class="fcp-code">npm run dev</span><span class="fcp-text"> to start the dev server.</span></div>
+                <div class="fcp-line"><span class="fcp-tag">&lt;/Callout&gt;</span></div>
+                <div class="fcp-line fcp-mt"><span class="fcp-tag">&lt;Steps&gt;</span></div>
+                <div class="fcp-line fcp-indent"><span class="fcp-tag">&lt;Step&gt;</span><span class="fcp-text">Install dependencies</span><span class="fcp-tag">&lt;/Step&gt;</span></div>
+                <div class="fcp-line fcp-indent"><span class="fcp-tag">&lt;Step&gt;</span><span class="fcp-text">Configure your site</span><span class="fcp-tag">&lt;/Step&gt;</span></div>
+                <div class="fcp-line"><span class="fcp-tag">&lt;/Steps&gt;</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="feat feat-search">
+            <div class="feat-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </div>
+            <h3>Instant full-text search</h3>
+            <p>Client-side search powered by Orama. Zero external services, zero API keys. The index builds at compile time and runs entirely in the browser.</p>
+            <div class="feat-search-preview" aria-hidden="true">
+              <div class="fsp-bar">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <span class="fsp-query">frontmatter</span>
+                <kbd>⌘K</kbd>
+              </div>
+              <div class="fsp-results">
+                <div class="fsp-result fsp-result--active">
+                  <span class="fsp-section">API reference</span>
+                  <span class="fsp-title">Frontmatter schema</span>
+                </div>
+                <div class="fsp-result">
+                  <span class="fsp-section">Authoring</span>
+                  <span class="fsp-title">Markdown &amp; MDX</span>
+                </div>
+                <div class="fsp-result">
+                  <span class="fsp-section">Getting started</span>
+                  <span class="fsp-title">Configuration</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="feat feat-dark">
+            <div class="feat-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+            </div>
+            <h3>Dark mode, done right</h3>
+            <p>Three-state toggle: light, system, dark. Colors are hand-picked — not an automated inversion — so both themes look intentional.</p>
+            <div class="feat-theme-chips" aria-hidden="true">
+              <span class="theme-chip theme-chip--light">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                Light
+              </span>
+              <span class="theme-chip theme-chip--system">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                System
+              </span>
+              <span class="theme-chip theme-chip--dark">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                Dark
+              </span>
+            </div>
+          </div>
+
+          <div class="feat feat-i18n">
+            <div class="feat-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            </div>
+            <h3>i18n built in</h3>
+            <p>Six locales ship out of the box with translated UI chrome. Add a language by dropping files into <code>content/docs/{'{locale}'}/</code>.</p>
+            <div class="feat-locale-chips" aria-hidden="true">
+              <span class="locale-chip">en</span>
+              <span class="locale-chip">fr</span>
+              <span class="locale-chip">es</span>
+              <span class="locale-chip">de</span>
+              <span class="locale-chip">ja</span>
+              <span class="locale-chip">hi</span>
+            </div>
+          </div>
+
+          <div class="feat feat-design">
+            <div class="feat-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            </div>
+            <h3>Design-first</h3>
+            <p>Every decision — 860px content width, serif body type, warm off-white — was made for readability. Polished without touching a CSS variable.</p>
+          </div>
+
+          <!-- Deploy — full-width card -->
+          <div class="feat feat-deploy">
+            <div class="feat-deploy-body">
+              <div class="feat-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              </div>
+              <h3>Deploy anywhere</h3>
+              <p>Generates pure static HTML — no server, no runtime, no lock-in. Automated CI/CD workflows included for every major platform.</p>
+            </div>
+            <div class="feat-deploy-platforms">
+
+              <span class="platform-tag">
+                <svg width="12" height="10" viewBox="0 0 116 100" fill="currentColor" aria-hidden="true"><path d="M57.5 0L115 100H0L57.5 0Z"/></svg>
+                Vercel
+              </span>
+
+              <span class="platform-tag">
+                <svg width="13" height="13" viewBox="0 0 40 40" fill="currentColor" aria-hidden="true"><path d="M0 40V0h8L32 28V0h8v40h-8L8 12V40z"/></svg>
+                Netlify
+              </span>
+
+              <span class="platform-tag">
+                <svg width="16" height="10" viewBox="0 0 54 34" fill="currentColor" aria-hidden="true"><path d="M35 6.3A13 13 0 0 0 9.5 12.7 8.8 8.8 0 0 0 1 21.5 8.8 8.8 0 0 0 9.8 30.3h28.4a7.1 7.1 0 0 0 0-14.2 6.5 6.5 0 0 0-.9.06A13 13 0 0 0 35 6.3z"/></svg>
+                Cloudflare Pages
+              </span>
+
+              <span class="platform-tag">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                GitHub Pages
+              </span>
+
+              <span class="platform-tag">
+                <svg width="14" height="13" viewBox="0 0 380 380" fill="currentColor" aria-hidden="true"><path d="M190 340L353 108 315 8H65L27 108z"/><path d="M190 340L27 108 0 190z" opacity="0.7"/><path d="M190 340L353 108 380 190z" opacity="0.7"/></svg>
+                GitLab Pages
+              </span>
+
+              <span class="platform-tag">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+                Self-hosted
+              </span>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Who it's for -->
+    <section class="use-cases">
+      <div class="use-cases-inner">
+        <h2>Who uses Scrollup.io?</h2>
+        <div class="use-cases-grid">
+          <div class="use-case">
+            <h3>Developer tools & libraries</h3>
+            <p>Document your API, SDK, or CLI with structured reference pages, code blocks, and an endpoint component built for technical readers.</p>
+          </div>
+          <div class="use-case">
+            <h3>SaaS products</h3>
+            <p>Ship user-facing documentation alongside your product. The clean design and dark mode keep enterprise readers comfortable across long sessions.</p>
+          </div>
+          <div class="use-case">
+            <h3>Internal knowledge bases</h3>
+            <p>Version-controlled docs in a Git repo, with full-text search and a sidebar that builds itself from your file structure. No CMS required.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Portal Cards -->
+    <section class="portal-cards">
+      <div class="portal-header">
+        <h2>Browse the documentation</h2>
+      </div>
+      <div class="cards-grid">
+
+        <!-- Getting Started -->
+        <div class="portal-card">
+          <div class="card-header">
+            <svg class="card-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+            <h2>Getting started</h2>
+          </div>
+          <div class="card-divider"></div>
+          <ul class="card-links">
+            <li><a href="/en/getting-started/introduction">Introduction</a></li>
+            <li><a href="/en/getting-started/installation">Installation</a></li>
+            <li><a href="/en/getting-started/configuration">Configuration</a></li>
+            <li><a href="/en/getting-started/project-structure">Project structure</a></li>
+            <li><a href="/en/getting-started/your-first-docs-site">Your first docs site</a></li>
+            <li><a href="/en/getting-started/troubleshooting">Troubleshooting</a></li>
+          </ul>
+        </div>
+
+        <!-- Authoring Content -->
+        <div class="portal-card">
+          <div class="card-header">
+            <svg class="card-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+            <h2>Authoring content</h2>
+          </div>
+          <div class="card-divider"></div>
+          <ul class="card-links">
+            <li><a href="/en/authoring/markdown-and-mdx">Markdown &amp; MDX</a></li>
+            <li><a href="/en/authoring/frontmatter-schema">Frontmatter schema</a></li>
+            <li><a href="/en/authoring/built-in-components">Built-in components</a></li>
+            <li><a href="/en/authoring/advanced-components">Advanced components</a></li>
+            <li><a href="/en/authoring/code-blocks">Code blocks</a></li>
+            <li><a href="/en/authoring/notes-and-asides">Notes &amp; asides</a></li>
+          </ul>
+        </div>
+
+        <!-- Theming & Customization -->
+        <div class="portal-card">
+          <div class="card-header">
+            <svg class="card-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            <h2>Theming &amp; customization</h2>
+          </div>
+          <div class="card-divider"></div>
+          <ul class="card-links">
+            <li><a href="/en/theming/colors-and-typography">Colors &amp; typography</a></li>
+            <li><a href="/en/theming/dark-mode">Dark mode</a></li>
+            <li><a href="/en/theming/layout-and-navigation">Layout &amp; navigation</a></li>
+            <li><a href="/en/theming/custom-css">Custom CSS</a></li>
+          </ul>
+        </div>
+
+        <!-- Internationalization -->
+        <div class="portal-card">
+          <div class="card-header">
+            <svg class="card-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <h2>Internationalization</h2>
+          </div>
+          <div class="card-divider"></div>
+          <ul class="card-links">
+            <li><a href="/en/internationalization/adding-a-language">Adding a language</a></li>
+            <li><a href="/en/internationalization/routing">Routing &amp; URL structure</a></li>
+            <li><a href="/en/internationalization/ui-strings">UI strings &amp; translations</a></li>
+            <li><a href="/en/internationalization/language-switcher">Language switcher</a></li>
+            <li><a href="/en/internationalization/fallback-content">Fallback content</a></li>
+            <li><a href="/en/internationalization/rtl">RTL support</a></li>
+          </ul>
+        </div>
+
+        <!-- Component overrides -->
+        <div class="portal-card">
+          <div class="card-header">
+            <svg class="card-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+            <h2>Component overrides</h2>
+          </div>
+          <div class="card-divider"></div>
+          <ul class="card-links">
+            <li><a href="/en/component-overrides/overview">Overview &amp; usage</a></li>
+          </ul>
+        </div>
+
+        <!-- Plugins -->
+        <div class="portal-card">
+          <div class="card-header">
+            <svg class="card-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" y1="8" x2="2" y2="22"/><line x1="17.5" y1="15" x2="9" y2="15"/></svg>
+            <h2>Plugins</h2>
+          </div>
+          <div class="card-divider"></div>
+          <ul class="card-links">
+            <li><a href="/en/plugins/overview">Overview</a></li>
+            <li><a href="/en/plugins/writing-a-plugin">Writing a plugin</a></li>
+          </ul>
+        </div>
+
+        <!-- Deployment -->
+        <div class="portal-card">
+          <div class="card-header">
+            <svg class="card-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <h2>Deployment</h2>
+          </div>
+          <div class="card-divider"></div>
+          <ul class="card-links">
+            <li><a href="/en/deployment/static-hosting">Static hosting</a></li>
+            <li><a href="/en/deployment/vercel">Vercel</a></li>
+            <li><a href="/en/deployment/netlify">Netlify</a></li>
+            <li><a href="/en/deployment/cloudflare-pages">Cloudflare Pages</a></li>
+            <li><a href="/en/deployment/github-pages">GitHub Pages</a></li>
+            <li><a href="/en/deployment/gitlab-pages">GitLab Pages</a></li>
+            <li><a href="/en/deployment/self-hosted">Self-hosted</a></li>
+            <li><a href="/en/deployment/ci-cd">CI/CD automation</a></li>
+          </ul>
+        </div>
+
+        <!-- API Reference -->
+        <div class="portal-card">
+          <div class="card-header">
+            <svg class="card-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            <h2>API reference</h2>
+          </div>
+          <div class="card-divider"></div>
+          <ul class="card-links">
+            <li><a href="/en/api-reference/config-options">Config options</a></li>
+            <li><a href="/en/api-reference/site-config">Site config</a></li>
+            <li><a href="/en/api-reference/cli">CLI reference</a></li>
+          </ul>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Community -->
+    <section class="community">
+      <div class="community-inner">
+        <h2>Open source &amp; community</h2>
+        <p>Scrollup.io is MIT-licensed and developed in the open. Questions, bug reports, and contributions are all welcome.</p>
+        <div class="community-links">
+          <a href={siteConfig.repoUrl} target="_blank" rel="noopener noreferrer" class="community-link">
+            <Fragment set:html={socialIcons['github']} />
+            GitHub
+            <Fragment set:html={extLinkIcon} />
+          </a>
+          <a href={`${siteConfig.repoUrl}/issues`} target="_blank" rel="noopener noreferrer" class="community-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Report an issue
+            <Fragment set:html={extLinkIcon} />
+          </a>
+          <a href={`${siteConfig.repoUrl}/discussions`} target="_blank" rel="noopener noreferrer" class="community-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Discussions
+            <Fragment set:html={extLinkIcon} />
+          </a>
+          <a href={`${siteConfig.repoUrl}/blob/main/CONTRIBUTING.md`} target="_blank" rel="noopener noreferrer" class="community-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Contributing
+            <Fragment set:html={extLinkIcon} />
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <Footer />
+
+  </main>
+</body>
+</html>
+
+<style>
+  /* ===== Landing layout ===== */
+  .landing {
+    padding-top: 52px;
+  }
+
+
+  /* ===== Hero Banner ===== */
+  .hero {
+    position: relative;
+    overflow: hidden;
+    min-height: 420px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to right,
+      hsl(217 98% 20%),
+      hsl(216 99% 30%),
+      hsl(217 98% 20%)
+    );
+  }
+  [data-theme="dark"] .hero-bg {
+    background: linear-gradient(to right, hsl(217 55% 13%), hsl(216 60% 18%), hsl(217 55% 13%));
+  }
+
+  /* Subtle dot grid overlay */
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 80px 32px 64px;
+    text-align: center;
+  }
+
+  /* Open-source badge */
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.7);
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 20px;
+    padding: 4px 12px;
+    margin-bottom: 20px;
+  }
+
+  .hero h1 {
+    font-family: var(--sans);
+    font-size: clamp(2rem, 4.5vw, 2.8rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.18;
+    color: #ffffff;
+    margin-bottom: 20px;
+  }
+
+  .hero-sub {
+    font-family: var(--serif);
+    font-size: 1.05rem;
+    line-height: 1.75;
+    color: rgba(255,255,255,0.75);
+    max-width: 580px;
+    margin: 0 auto 36px;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 32px;
+  }
+
+  .btn-primary {
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: 14px;
+    color: hsl(216 99% 30%);
+    background: #ffffff;
+    padding: 10px 28px;
+    border-radius: var(--radius);
+    text-decoration: none;
+    transition: opacity 0.15s, transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  }
+  .btn-primary:hover {
+    opacity: 0.92;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+  [data-theme="dark"] .btn-primary {
+    color: hsl(216 60% 18%);
+  }
+
+  .btn-secondary {
+    font-family: var(--sans);
+    font-weight: 500;
+    font-size: 14px;
+    color: rgba(255,255,255,0.9);
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 10px 24px;
+    border-radius: var(--radius);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.15s, border-color 0.15s, transform 0.15s;
+    backdrop-filter: blur(4px);
+  }
+  .btn-secondary:hover {
+    background: rgba(255,255,255,0.18);
+    border-color: rgba(255,255,255,0.35);
+    transform: translateY(-1px);
+  }
+
+  /* Search bar hint inside hero */
+  .hero-search {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px;
+    padding: 10px 18px;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .hero-search:hover {
+    background: rgba(255,255,255,0.14);
+    border-color: rgba(255,255,255,0.22);
+  }
+  .hero-search svg {
+    color: rgba(255,255,255,0.5);
+    flex-shrink: 0;
+  }
+  .hero-search span {
+    font-family: var(--sans);
+    font-size: 13.5px;
+    color: rgba(255,255,255,0.65);
+  }
+  .hero-search kbd {
+    font-family: var(--sans);
+    font-size: 11px;
+    color: rgba(255,255,255,0.55);
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    padding: 2px 7px;
+    border-radius: 4px;
+    margin-left: 16px;
+  }
+
+  /* ===== Feature Highlights ===== */
+  .features {
+    background: var(--bg-surface);
+    border-top: 1px solid var(--border-subtle);
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 72px 32px;
+  }
+
+  .features-inner {
+    max-width: 1060px;
+    margin: 0 auto;
+  }
+
+  .features-header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .features-header h2 {
+    font-family: var(--sans);
+    font-size: 1.75rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+    color: var(--text-1);
+    margin: 0 0 12px;
+  }
+
+  .features-header p {
+    font-family: var(--serif);
+    font-size: 1rem;
+    color: var(--text-2);
+    max-width: 420px;
+    margin: 0 auto;
+    line-height: 1.65;
+  }
+
+  /* ── Bento grid ── */
+  .features-bento {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  /* Base card */
+  .feat {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: box-shadow 0.15s ease, border-color 0.15s ease;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .feat:hover {
+    border-color: color-mix(in srgb, var(--accent) 30%, var(--border));
+    box-shadow: 0 4px 24px color-mix(in srgb, var(--accent) 6%, transparent);
+  }
+
+  /* Grid placements */
+  .feat-mdx    { grid-column: 1 / 3; }
+  .feat-search { grid-column: 3; }
+  .feat-dark   { grid-column: 1; }
+  .feat-i18n   { grid-column: 2; }
+  .feat-design { grid-column: 3; }
+  .feat-deploy { grid-column: 1 / 4; flex-direction: row; align-items: center; gap: 40px; }
+
+  /* Icon */
+  .feat-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 9px;
+    background: var(--accent-subtle);
+    border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent);
+    flex-shrink: 0;
+    margin-bottom: 2px;
+  }
+
+  .feat h3 {
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 650;
+    color: var(--text-1);
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+
+  .feat > p {
+    font-family: var(--sans);
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--text-2);
+    margin: 0;
+  }
+
+  .feat > p code {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    padding: 1px 5px;
+    border-radius: 4px;
+    color: var(--text-1);
+  }
+
+  /* ── MDX card: code preview ── */
+  .feat-code-preview {
+    margin-top: 8px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+
+  .fcp-chrome {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .fcp-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+  }
+
+  .fcp-filename {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-3);
+    margin-left: 4px;
+  }
+
+  .fcp-body {
+    padding: 14px 16px;
+    background: var(--bg-code);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .fcp-line {
+    line-height: 1.7;
+    white-space: pre;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .fcp-indent { padding-left: 18px; }
+  .fcp-mt    { margin-top: 6px; }
+
+  .fcp-tag  { color: #7DD3FC; }
+  .fcp-attr { color: #86EFAC; }
+  .fcp-eq   { color: #94A3B8; }
+  .fcp-str  { color: #FCA5A5; }
+  .fcp-text { color: #CBD5E1; }
+  .fcp-code {
+    color: #FCD34D;
+    background: rgba(255,255,255,0.05);
+    padding: 0 4px;
+    border-radius: 3px;
+  }
+
+  /* ── Search card: mini dialog ── */
+  .feat-search-preview {
+    margin-top: 8px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    font-family: var(--sans);
+    font-size: 12.5px;
+  }
+
+  .fsp-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 12px;
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border-subtle);
+    color: var(--text-3);
+  }
+
+  .fsp-query {
+    flex: 1;
+    color: var(--text-1);
+    font-family: var(--sans);
+    font-size: 12.5px;
+  }
+
+  .fsp-bar kbd {
+    font-family: var(--sans);
+    font-size: 10px;
+    padding: 1px 5px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--bg);
+    color: var(--text-3);
+  }
+
+  .fsp-results { padding: 6px; background: var(--bg); }
+
+  .fsp-result {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    padding: 7px 8px;
+    border-radius: 6px;
+    cursor: default;
+  }
+
+  .fsp-result--active { background: var(--accent-subtle); }
+
+  .fsp-section {
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+  }
+
+  .fsp-result:not(.fsp-result--active) .fsp-section { color: var(--text-3); }
+
+  .fsp-title {
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--text-1);
+  }
+
+  /* ── Dark mode card: theme chips ── */
+  .feat-theme-chips {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+  }
+
+  .theme-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 5px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+  }
+
+  .theme-chip--light  { background: #FAF9F5; color: #1A1918; border-color: #E5E3D9; }
+  .theme-chip--system { background: var(--bg-surface); color: var(--text-2); }
+  .theme-chip--dark   { background: #161619; color: #ECECEC; border-color: #2E2E38; }
+
+  /* ── i18n card: locale chips ── */
+  .feat-locale-chips {
+    display: flex;
+    gap: 7px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+  }
+
+  .locale-chip {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 9px;
+    border-radius: 5px;
+    background: var(--accent-subtle);
+    color: var(--accent);
+    border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+    letter-spacing: 0.02em;
+  }
+
+  /* ── Deploy card ── */
+  .feat-deploy-body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex-shrink: 0;
+    max-width: 320px;
+  }
+
+  .feat-deploy-platforms {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .platform-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--sans);
+    font-size: 12.5px;
+    font-weight: 500;
+    padding: 6px 13px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--bg-surface);
+    color: var(--text-2);
+    white-space: nowrap;
+    transition: border-color 0.12s ease, color 0.12s ease;
+  }
+
+  .feat-deploy:hover .platform-tag {
+    border-color: color-mix(in srgb, var(--accent) 25%, var(--border));
+    color: var(--text-1);
+  }
+
+  /* ===== Who it's for ===== */
+  .use-cases {
+    padding: 64px 32px;
+  }
+
+  .use-cases-inner {
+    max-width: 1060px;
+    margin: 0 auto;
+  }
+
+  .use-cases h2 {
+    font-family: var(--sans);
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text-1);
+    margin-bottom: 32px;
+    text-align: center;
+  }
+
+  .use-cases-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  .use-case {
+    padding: 24px;
+    border: 1px solid var(--border-subtle);
+    border-radius: 10px;
+    background: var(--bg);
+  }
+
+  .use-case h3 {
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-1);
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+  }
+
+  .use-case p {
+    font-family: var(--sans);
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--text-2);
+    margin: 0;
+  }
+
+  /* ===== Portal Cards ===== */
+  .portal-cards {
+    max-width: 1060px;
+    margin: 0 auto;
+    padding: 0 32px 64px;
+  }
+
+  .portal-header {
+    margin-bottom: 24px;
+    padding-top: 8px;
+  }
+
+  .portal-header h2 {
+    font-family: var(--sans);
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--text-2);
+  }
+
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  .portal-card {
+    border: 1px solid var(--border-subtle);
+    border-radius: 10px;
+    padding: 28px 28px 24px;
+    background: var(--bg);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .portal-card:hover {
+    border-color: var(--border);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .card-icon {
+    color: var(--text-1);
+    flex-shrink: 0;
+  }
+
+  .card-header h2 {
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-1);
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+
+  .card-divider {
+    height: 1px;
+    background: var(--border-subtle);
+    margin-bottom: 16px;
+  }
+
+  .card-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .card-links li {
+    margin-bottom: 2px;
+  }
+
+  .card-links a {
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--accent);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 0;
+    transition: color 0.12s;
+  }
+  .card-links a:hover {
+    color: var(--text-1);
+    text-decoration: underline;
+  }
+
+  .card-links svg {
+    flex-shrink: 0;
+    opacity: 0.6;
+  }
+
+  /* ===== Community ===== */
+  .community {
+    background: var(--bg-surface);
+    border-top: 1px solid var(--border-subtle);
+    padding: 48px 32px;
+    text-align: center;
+  }
+
+  .community-inner {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  .community h2 {
+    font-family: var(--sans);
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text-1);
+    margin-bottom: 10px;
+  }
+
+  .community p {
+    font-family: var(--serif);
+    font-size: 0.95rem;
+    line-height: 1.65;
+    color: var(--text-2);
+    margin-bottom: 28px;
+  }
+
+  .community-links {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .community-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--sans);
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--text-2);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    padding: 8px 16px;
+    text-decoration: none;
+    background: var(--bg);
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .community-link:hover {
+    color: var(--text-1);
+    border-color: var(--border);
+  }
+
+  .community-link svg:last-child {
+    opacity: 0.5;
+  }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 768px) {
+    .hero {
+      min-height: 360px;
+    }
+
+    .hero-content {
+      padding: 56px 24px 48px;
+    }
+
+    .hero h1 {
+      font-size: 1.75rem;
+    }
+
+    .hero-search {
+      display: none;
+    }
+
+    .use-cases-grid,
+    .cards-grid {
+      grid-template-columns: 1fr;
+    }
+
+    /* Bento collapses to single column; reset explicit placements */
+    .features-bento {
+      grid-template-columns: 1fr;
+    }
+
+    .feat-mdx,
+    .feat-search,
+    .feat-dark,
+    .feat-i18n,
+    .feat-design,
+    .feat-deploy {
+      grid-column: 1;
+    }
+
+    .feat-deploy {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 20px;
+    }
+
+    .features,
+    .use-cases,
+    .portal-cards,
+    .community {
+      padding-left: 24px;
+      padding-right: 24px;
+    }
+  }
+
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .use-cases-grid,
+    .cards-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Tablet bento: 2 cols, reset to auto placement */
+    .features-bento {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .feat-mdx,
+    .feat-search,
+    .feat-dark,
+    .feat-i18n,
+    .feat-design {
+      grid-column: auto;
+    }
+
+    .feat-deploy {
+      grid-column: 1 / 3;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 20px;
+    }
+
+  }
+
+  @media (max-width: 1024px) {
+    .feat-deploy-body { max-width: none; }
+  }
+</style>

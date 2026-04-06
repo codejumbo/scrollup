@@ -1,0 +1,73 @@
+---
+title: "Configuration"
+description: "All the options available in your Scrollup configuration file, from site metadata to theme customization."
+section: "Getting started"
+order: 4
+lastUpdated: "2026-04-04"
+---
+
+Scrollup is configured through `astro.config.ts` at the project root. The configuration file controls site metadata, theme settings, navigation structure, and build behavior.
+
+## Site metadata
+
+The top-level fields define how your documentation site identifies itself to browsers and search engines.
+
+```ts title="astro.config.ts"
+export default defineConfig({
+  site: 'https://docs.example.com',
+  output: 'static',
+  // ...integrations
+})
+```
+
+## Content collections
+
+Content is defined in `src/content.config.ts` using Astro's content collection API with a Zod schema for validation.
+
+```ts title="src/content.config.ts"
+import { defineCollection, z } from 'astro:content';
+import { glob } from 'astro/loaders';
+
+const docs = defineCollection({
+  loader: glob({ pattern: '**/*.mdx', base: './content/docs' }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    section: z.string(),
+    order: z.number(),
+    draft: z.boolean().optional().default(false),
+  }),
+});
+
+export const collections = { docs };
+```
+
+## Theme options
+
+The design system uses CSS custom properties defined in `src/styles/tokens.css`. You can override any token to adjust colors, spacing, or typography.
+
+```css title="src/styles/tokens.css"
+:root {
+  --accent: #0066FF;       /* Links, active states */
+  --bg: #FAF9F5;           /* Page background */
+  --text-1: #1A1918;       /* Primary text */
+  --content-w: 860px;      /* Article max width */
+  --shell-max: 1440px;     /* Overall layout max width */
+}
+```
+
+<Callout type="warning" title="Changing fonts">
+  If you change the body or heading fonts, also update the `@font-face` declarations in `src/styles/typography.css` and ensure the new font files are placed in `public/fonts/`.
+</Callout>
+
+---
+
+## Build commands
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start the development server with hot reload |
+| `npm run build` | Generate the production static site to `dist/` |
+| `npm run preview` | Preview the production build locally |
+
+The build output is a directory of static HTML, CSS, and JavaScript files ready to deploy to any static hosting provider.

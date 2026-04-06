@@ -1,0 +1,41 @@
+---
+interface Props {
+  caption?: string;
+  border?: boolean;
+}
+
+const { caption, border = true } = Astro.props;
+---
+
+<figure class:list={['frame', { 'frame-border': border }]}>
+  <div class="frame-content">
+    <slot />
+  </div>
+  {caption && <figcaption class="frame-caption">{caption}</figcaption>}
+</figure>
+
+<style>
+  .frame {
+    margin: 24px 0;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .frame-border {
+    border: 1px solid var(--border-subtle);
+  }
+
+  .frame-content :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .frame-caption {
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--text-3);
+    text-align: center;
+    padding: 10px 16px;
+  }
+</style>

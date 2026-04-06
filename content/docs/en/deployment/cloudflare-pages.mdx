@@ -1,0 +1,44 @@
+---
+title: "Cloudflare Pages"
+description: "Deploy your Scrollup site to Cloudflare Pages for fast, globally distributed hosting."
+section: "Deployment"
+order: 44
+lastUpdated: "2026-04-04"
+---
+
+Cloudflare Pages provides fast static hosting with a global CDN, automatic HTTPS, and unlimited bandwidth on the free tier.
+
+## Setup
+
+<Steps>
+  <Step num={1} title="Push to GitHub or GitLab">
+    Ensure your Scrollup project is in a Git repository.
+  </Step>
+  <Step num={2} title="Create a Pages project">
+    Go to the [Cloudflare dashboard](https://dash.cloudflare.com), navigate to **Workers & Pages > Create application > Pages**, and connect your Git repository.
+  </Step>
+  <Step num={3} title="Configure build settings">
+    Set the following:
+
+    - **Framework preset:** Astro
+    - **Build command:** `npm run build`
+    - **Build output directory:** `dist`
+  </Step>
+  <Step num={4} title="Deploy">
+    Click **Save and Deploy**. Cloudflare builds your site and makes it available on a `.pages.dev` subdomain.
+  </Step>
+</Steps>
+
+## Custom domain
+
+1. Go to your Pages project settings
+2. Click **Custom domains > Set up a custom domain**
+3. If your domain is already on Cloudflare, DNS records are configured automatically
+
+## Environment variables
+
+Add environment variables in **Settings > Environment variables**. You can set different values for production and preview environments.
+
+<Callout type="tip" title="Wrangler CLI">
+  You can also deploy directly from the command line using Wrangler: `npx wrangler pages deploy dist`
+</Callout>

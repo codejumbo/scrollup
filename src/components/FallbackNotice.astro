@@ -1,0 +1,49 @@
+---
+import type { TFunction } from '@/lib/i18n';
+import Icon from '@/components/mdx/Icon.astro';
+
+interface Props {
+  t: TFunction;
+  englishSlug: string;
+}
+
+const { t, englishSlug } = Astro.props;
+---
+
+<div class="fallback-notice">
+  <Icon name="info" size={15} />
+  <span>
+    {t('page.notTranslated')}
+    {' '}
+    <a href={`/${englishSlug}`}>{t('page.notTranslated.view')}</a>
+  </span>
+</div>
+
+<style>
+  .fallback-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: color-mix(in srgb, var(--accent) 8%, var(--bg-surface));
+    border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    margin-bottom: 32px;
+    font-family: var(--sans);
+    font-size: 13.5px;
+    color: var(--text-2);
+  }
+
+  .fallback-notice :global(.icon) {
+    flex-shrink: 0;
+    margin-top: 1px;
+    color: var(--accent);
+  }
+
+  .fallback-notice a {
+    color: var(--accent);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+</style>

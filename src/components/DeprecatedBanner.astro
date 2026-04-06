@@ -1,0 +1,41 @@
+---
+import type { TFunction } from '@/lib/i18n';
+
+interface Props {
+  t: TFunction;
+}
+const { t } = Astro.props;
+---
+
+<div class="deprecated-banner">
+  <strong>Deprecated</strong>
+  <span>{t('deprecated.notice')}</span>
+</div>
+
+<style>
+  .deprecated-banner {
+    background: var(--bg-deprecated);
+    border-radius: 10px;
+    padding: 14px 20px;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+
+  .deprecated-banner strong {
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-1);
+    letter-spacing: 0.01em;
+    flex-shrink: 0;
+  }
+
+  .deprecated-banner span {
+    font-family: var(--serif);
+    font-size: 14.5px;
+    line-height: 1.5;
+    color: var(--text-2);
+  }
+</style>

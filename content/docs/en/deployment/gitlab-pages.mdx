@@ -1,0 +1,54 @@
+---
+title: "GitLab Pages"
+description: "Deploy your Scrollup site to GitLab Pages using GitLab CI/CD pipelines."
+section: "Deployment"
+order: 45
+lastUpdated: "2026-04-04"
+---
+
+GitLab Pages provides free static hosting integrated with GitLab CI/CD. Your documentation builds and deploys automatically on every push.
+
+## CI/CD configuration
+
+Create a `.gitlab-ci.yml` file in your project root:
+
+```yaml title=".gitlab-ci.yml"
+image: node:22
+
+pages:
+  stage: deploy
+  script:
+    - npm ci
+    - npm run build
+    - mv dist public
+  artifacts:
+    paths:
+      - public
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+```
+
+<Callout type="note" title="Output directory">
+  GitLab Pages requires the output directory to be named `public`. The pipeline moves `dist` to `public` after building.
+</Callout>
+
+## Setup
+
+<Steps>
+  <Step num={1} title="Add the CI config">
+    Commit `.gitlab-ci.yml` to your repository root.
+  </Step>
+  <Step num={2} title="Push to GitLab">
+    Push your changes. The pipeline runs automatically and deploys your site.
+  </Step>
+  <Step num={3} title="Access your site">
+    Your site is available at `https://<username>.gitlab.io/<project-name>/`.
+  </Step>
+</Steps>
+
+## Custom domain
+
+1. Go to **Settings > Pages** in your GitLab project
+2. Click **New Domain** and enter your custom domain
+3. Configure a CNAME record pointing to `<username>.gitlab.io`
+4. Optionally, let GitLab provision a TLS certificate via Let's Encrypt

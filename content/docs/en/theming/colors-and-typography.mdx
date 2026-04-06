@@ -1,0 +1,90 @@
+---
+title: "Colors & typography"
+description: "The design system behind Scrollup — warm backgrounds, editorial typefaces, and a carefully calibrated color palette."
+section: "Theming"
+order: 20
+lastUpdated: "2026-04-04"
+---
+
+Scrollup's visual identity comes from deliberate choices about color, type, and spacing. Every value was selected to optimize for sustained reading comfort, not just aesthetic appeal.
+
+## Color palette
+
+### Light mode
+
+The light theme uses a warm off-white background instead of pure white. Pure white (`#FFFFFF`) causes eye strain during extended reading sessions. The warm tint (`#FAF9F5`) feels natural, like quality paper.
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| `--bg` | `#FAF9F5` | Page background |
+| `--bg-surface` | `#F0EFE9` | Sidebar, inputs, callouts |
+| `--bg-code` | `#1A1A1F` | Code blocks (always dark) |
+| `--text-1` | `#1A1918` | Primary text |
+| `--text-2` | `#5C5B56` | Secondary text, descriptions |
+| `--text-3` | `#A0A09A` | Tertiary, labels, breadcrumbs |
+| `--accent` | `#0066FF` | Links, active states |
+| `--border` | `#E5E3D9` | Dividers, separators |
+
+### Dark mode
+
+The dark theme was hand-selected, not algorithmically inverted. Each color was individually chosen for legibility and comfort against the deep dark background.
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| `--bg` | `#161619` | Page background |
+| `--text-1` | `#ECECEC` | Primary text (not pure white) |
+| `--accent` | `#70B8FF` | Links (lighter for dark bg) |
+
+<Callout type="note">
+  Text in dark mode uses `#ECECEC` rather than pure white (`#FFFFFF`). Pure white on dark backgrounds causes halation — a glow effect around text that reduces readability. The slightly muted white is easier on the eyes.
+</Callout>
+
+---
+
+## Typography
+
+### Font pairing
+
+Scrollup uses three typefaces, each chosen for a specific role:
+
+**Source Serif 4** (body text) — A variable serif designed by Adobe for screen readability. It provides the warmth and editorial quality of a serif without sacrificing legibility. Set at 17px with 1.8 line height for generous vertical rhythm.
+
+**Satoshi** (headings and UI) — A Swiss-style modernist sans-serif with a double-story lowercase 'a' and 'g'. The contrast between serif body and sans-serif headings creates visual hierarchy and gives the page a crafted, intentional feel.
+
+**JetBrains Mono** (code) — A monospace typeface with a tall x-height and distinctive characters. The dotted zero, tailed lowercase L, and serifed capital I prevent character confusion in code.
+
+### Type scale
+
+```css title="Type scale"
+h1: 2.15rem (34px) — weight 700, tracking -0.03em
+h2: 1.3rem  (21px) — weight 700, tracking -0.025em
+h3: 1.05rem (17px) — weight 700, tracking -0.015em
+body: 1.0625rem (17px) — weight 400, line-height 1.8
+code: 13.5px — weight 400, line-height 1.65
+```
+
+### Vertical rhythm
+
+Consistent spacing between elements creates a rhythm that guides the eye down the page:
+
+- **22px** between paragraphs
+- **64px** before h2 headings (a full visual break)
+- **40px** before h3 headings (a moderate break)
+- **48px** for horizontal rules
+
+---
+
+## Customization
+
+Override any CSS custom property in `src/styles/tokens.css` to adjust the design system. Changes propagate automatically through all components.
+
+```css title="src/styles/tokens.css"
+:root {
+  --accent: #E63946;  /* Red accent instead of blue */
+  --bg: #FEFEFE;      /* Cooler background */
+}
+```
+
+<Callout type="warning">
+  Avoid changing `--content-w` without understanding the typographic implications. The 860px default produces 75–80 characters per line with the current font size, which is the optimal range for reading comfort. A wider content area requires a larger font size to maintain the same character count.
+</Callout>

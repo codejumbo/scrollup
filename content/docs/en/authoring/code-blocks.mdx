@@ -1,0 +1,98 @@
+---
+title: "Code blocks"
+description: "Syntax highlighting, filenames, line highlights, and copy buttons — all built in."
+section: "Authoring"
+order: 11
+lastUpdated: "2026-04-04"
+---
+
+Code blocks in Scrollup are powered by Expressive Code, giving you syntax highlighting for dozens of languages, filename headers, line highlighting, and automatic copy buttons — with no configuration needed.
+
+## Basic code blocks
+
+Wrap code in triple backticks with a language identifier:
+
+```js
+function greet(name) {
+  return `Hello, ${name}!`;
+}
+```
+
+## Filenames
+
+Add a `title` attribute to display a filename in the code block header:
+
+```ts title="src/utils/format.ts"
+export function formatDate(date: Date): string {
+  return new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  }).format(date);
+}
+```
+
+## Terminal commands
+
+Use `sh` or `bash` as the language with a "Terminal" title:
+
+```sh title="Terminal"
+npm install astro @astrojs/mdx
+```
+
+## Multi-language examples
+
+Different languages are highlighted with the same consistent dark theme:
+
+```python title="example.py"
+def fibonacci(n: int) -> list[int]:
+    """Generate the first n Fibonacci numbers."""
+    sequence = [0, 1]
+    for _ in range(2, n):
+        sequence.append(sequence[-1] + sequence[-2])
+    return sequence[:n]
+```
+
+```css title="styles.css"
+.article {
+  max-width: 860px;
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 1.0625rem;
+  line-height: 1.8;
+}
+```
+
+```yaml title="config.yml"
+site:
+  title: My Documentation
+  description: Built with Scrollup
+  theme:
+    accent: "#0066FF"
+```
+
+<Callout type="note">
+  Code blocks always use a dark background regardless of the page's light or dark theme. This prevents the jarring visual switch that happens when code blocks change color with the rest of the page.
+</Callout>
+
+---
+
+## Code component
+
+The `<Code>` component lets you render a code block programmatically with a string prop — useful when code content is dynamic or computed.
+
+```mdx
+import { Code } from '@/components/mdx';
+
+<Code code={`const greeting = "hello";`} lang="js" />
+<Code code={myCodeString} lang="ts" title="src/utils/format.ts" />
+```
+
+**Props:** `code` (required string), `lang` (language identifier, defaults to `"text"`), `title` (optional filename), `mark` (line/word highlights), `frame` (`'code'` | `'terminal'` | `'none'` | `'auto'`).
+
+This is a thin wrapper around Expressive Code — all the same highlighting, copy button, and frame features apply.
+
+---
+
+## Supported languages
+
+Expressive Code supports syntax highlighting for over 100 languages. Some commonly used ones include: JavaScript, TypeScript, Python, Go, Rust, Java, C#, Ruby, PHP, Swift, Kotlin, SQL, HTML, CSS, JSON, YAML, TOML, Bash, Docker, and GraphQL.

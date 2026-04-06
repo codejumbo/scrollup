@@ -1,0 +1,153 @@
+---
+import { LOCALE_NAMES, useTranslations, type Locale } from '@/lib/i18n';
+import { stripLocale } from '@/lib/navigation';
+
+interface Props {
+  currentLocale: Locale;
+  currentSlug: string;
+  availableLocales: Locale[];
+}
+
+const { currentLocale, currentSlug, availableLocales } = Astro.props;
+const path = stripLocale(currentSlug);
+const t = useTranslations(currentLocale);
+---
+
+<div class="lang-switcher">
+  <button class="lang-trigger" aria-haspopup="listbox" aria-expanded="false" aria-label={t('lang.select')} type="button">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="2" y1="12" x2="22" y2="12"/>
+      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+    </svg>
+    <span>{LOCALE_NAMES[currentLocale]}</span>
+    <svg class="chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+      <polyline points="6 9 12 15 18 9"/>
+    </svg>
+  </button>
+  <div class="lang-menu" role="listbox" aria-label="Select language" hidden>
+    {availableLocales.map((locale) => (
+      <a
+        href={`/${locale}/${path}`}
+        class:list={['lang-item', { active: locale === currentLocale }]}
+        lang={locale}
+        role="option"
+        aria-selected={locale === currentLocale}
+      >
+        {LOCALE_NAMES[locale]}
+      </a>
+    ))}
+  </div>
+</div>
+
+<script>
+  function initLangSwitcher(root: Document | ShadowRoot = document) {
+    root.querySelectorAll<HTMLElement>('.lang-switcher:not([data-init])').forEach((switcher) => {
+      switcher.setAttribute('data-init', '1');
+      const trigger = switcher.querySelector<HTMLButtonElement>('.lang-trigger')!;
+      const menu = switcher.querySelector<HTMLElement>('.lang-menu')!;
+
+      function open() {
+        menu.hidden = false;
+        trigger.setAttribute('aria-expanded', 'true');
+      }
+      function close() {
+        menu.hidden = true;
+        trigger.setAttribute('aria-expanded', 'false');
+      }
+
+      trigger.addEventListener('click', (e) => { e.stopPropagation(); menu.hidden ? open() : close(); });
+    });
+  }
+
+  document.addEventListener('click', (e) => {
+    document.querySelectorAll<HTMLElement>('.lang-switcher').forEach((switcher) => {
+      if (!switcher.contains(e.target as Node)) {
+        const menu = switcher.querySelector<HTMLElement>('.lang-menu')!;
+        if (!menu.hidden) {
+          menu.hidden = true;
+          switcher.querySelector<HTMLButtonElement>('.lang-trigger')!.setAttribute('aria-expanded', 'false');
+        }
+      }
+    });
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    document.querySelectorAll<HTMLElement>('.lang-menu').forEach((menu) => {
+      if (!menu.hidden) {
+        menu.hidden = true;
+        menu.closest('.lang-switcher')!.querySelector<HTMLButtonElement>('.lang-trigger')!.setAttribute('aria-expanded', 'false');
+      }
+    });
+  });
+
+  initLangSwitcher();
+  document.addEventListener('astro:after-swap', () => initLangSwitcher());
+</script>
+
+<style>
+  .lang-switcher {
+    position: relative;
+  }
+
+  .lang-trigger {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-3);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px 8px;
+    border-radius: var(--radius);
+    transition: color 0.15s, background 0.15s;
+    white-space: nowrap;
+    line-height: 1;
+  }
+  .lang-trigger:hover {
+    color: var(--text-2);
+    background: var(--bg-surface);
+  }
+  .chevron {
+    opacity: 0.6;
+    margin-left: 1px;
+  }
+
+  .lang-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    padding: 4px;
+    min-width: 140px;
+    z-index: 500;
+  }
+  .lang-menu[hidden] { display: none; }
+
+  .lang-item {
+    display: block;
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-2);
+    text-decoration: none;
+    padding: 7px 10px;
+    border-radius: 5px;
+    transition: background 0.1s, color 0.1s;
+  }
+  .lang-item:hover {
+    background: var(--bg-surface);
+    color: var(--text-1);
+  }
+  .lang-item.active {
+    color: var(--text-1);
+    font-weight: 600;
+  }
+</style>

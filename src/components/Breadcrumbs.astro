@@ -1,0 +1,35 @@
+---
+import type { TFunction } from '@/lib/i18n';
+
+interface Props {
+  section: string;
+  title: string;
+  t: TFunction;
+}
+
+const { section, title, t } = Astro.props;
+---
+
+<div class="crumbs">
+  <a href="/">{t('breadcrumbs.docs')}</a>
+  <span>/</span>
+  <a href="/">{section}</a>
+  <span>/</span>
+  {title}
+</div>
+
+<style>
+  .crumbs {
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-3);
+    margin-bottom: 28px;
+  }
+  .crumbs a {
+    color: var(--text-3);
+    text-decoration: none;
+  }
+  .crumbs a:hover { color: var(--text-2); }
+  .crumbs span { margin: 0 5px; }
+</style>

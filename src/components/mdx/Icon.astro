@@ -1,0 +1,32 @@
+---
+import { icons } from './icons';
+
+interface Props {
+  name: string;
+  size?: number;
+  class?: string;
+}
+
+const { name, size = 16, class: className } = Astro.props;
+const svg = icons[name];
+
+if (!svg && import.meta.env.DEV) {
+  console.warn(`[Icon] Unknown icon name: "${name}". Available icons: ${Object.keys(icons).join(', ')}`);
+}
+---
+
+{svg && (
+  <span
+    class:list={['icon', className]}
+    style={`width:${size}px;height:${size}px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;`}
+    aria-hidden="true"
+    set:html={svg}
+  />
+)}
+
+<style>
+  .icon :global(svg) {
+    width: 100%;
+    height: 100%;
+  }
+</style>
