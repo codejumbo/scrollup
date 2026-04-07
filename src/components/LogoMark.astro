@@ -1,0 +1,57 @@
+---
+import { siteConfig, getSiteName } from '@/lib/config';
+const { logo } = siteConfig;
+const siteName = getSiteName('en');
+---
+<a href="/" class="logo">
+  {logo ? (
+    logo.light && logo.dark ? (
+      <>
+        <img class="logo-img logo-light" src={logo.light} alt={logo.alt ?? siteName} width="20" height="20" />
+        <img class="logo-img logo-dark"  src={logo.dark}  alt={logo.alt ?? siteName} width="20" height="20" />
+      </>
+    ) : (
+      <img class="logo-img" src={logo.src ?? logo.light ?? logo.dark} alt={logo.alt ?? siteName} width="20" height="20" />
+    )
+  ) : (
+    <svg class="logo-mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="currentColor">
+      <rect x="4" y="4" width="4" height="24" rx="2"/>
+      <rect x="11" y="4" width="17" height="5" rx="2"/>
+      <rect x="11" y="13.5" width="12" height="5" rx="2"/>
+      <rect x="11" y="23" width="7" height="5" rx="2"/>
+    </svg>
+  )}
+  {siteName}
+</a>
+
+<style>
+  .logo {
+    font-family: var(--sans);
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--text-1);
+    width: var(--sidebar-w);
+    letter-spacing: -0.4px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    text-decoration: none;
+  }
+
+  .logo-mark {
+    width: 20px;
+    height: 20px;
+  }
+
+  .logo-img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+  }
+
+  /* Light/dark logo switching — safe from FOUC because ThemeInit runs before paint */
+  :global([data-theme="dark"])  .logo-light { display: none; }
+  :global([data-theme="light"]) .logo-dark  { display: none; }
+  /* System preference: default to hiding dark variant until theme is resolved */
+  :not(:global([data-theme])) .logo-dark { display: none; }
+</style>

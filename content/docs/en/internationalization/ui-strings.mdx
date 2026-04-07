@@ -1,0 +1,133 @@
+---
+title: "UI strings and translations"
+description: "How the translation system works, what strings are built in, and how to add new ones when you extend the UI."
+section: "Internationalization"
+order: 23
+lastUpdated: "2026-04-05"
+---
+
+All text that appears in the Scrollup UI chrome — navigation labels, search strings, the table of contents heading, and so on — is driven by a translation dictionary in `src/lib/i18n.ts`. Content authors never hardcode UI text in component templates.
+
+## Built-in strings
+
+The following keys are translated for all six built-in locales:
+
+<Accordion title="View all translation keys">
+
+| Key | English value | Where it appears |
+|-----|---------------|-----------------|
+| `toc.title` | On this page | Table of contents heading |
+| `nav.prev` | Previous | Bottom prev/next link |
+| `nav.next` | Next | Bottom prev/next link |
+| `lastUpdated` | Last updated | Page metadata line |
+| `editOnGitHub` | Edit this page on GitHub | Page metadata link |
+| `search.placeholder` | Search documentation... | Search bar placeholder |
+| `search.empty` | Type to search... | Empty search state |
+| `search.loading` | Loading search index... | Search loading state |
+| `search.noResults` | No results found. | Empty search results |
+| `deprecated.notice` | This page is deprecated... | Deprecated page banner |
+| `breadcrumbs.docs` | Docs | Breadcrumb root label |
+| `lang.label` | Language | Language switcher aria-label |
+
+</Accordion>
+
+## How components access translations
+
+The `DocsLayout.astro` component resolves the current locale from the page slug and calls `t()` to get the translation function:
+
+```ts
+// src/layouts/DocsLayout.astro (simplified)
+import { getTranslations, type TFunction } from '@/lib/i18n';
+
+const locale = getLocale(entry.id);
+const t: TFunction = getTranslations(locale);
+```
+
+`t` is then passed as a prop to child components that render text. Components that receive it type it as `TFunction`:
+
+```ts
+// A component that renders translated text
+interface Props {
+  t: TFunction;
+  // ...other props
+}
+
+const { t } = Astro.props;
+```
+
+```astro
+<!-- Inside the template -->
+<span>{t('toc.title')}</span>
+```
+
+## Adding a new string
+
+If you add a component that renders UI text, follow these steps:
+
+**1. Add the key to all six locale dictionaries in `src/lib/i18n.ts`:**
+
+```ts
+const translations = {
+  en: {
+    // ...existing keys
+    'myComponent.label': 'Learn more',
+  },
+  fr: {
+    // ...existing keys
+    'myComponent.label': 'En savoir plus',
+  },
+  es: {
+    // ...existing keys
+    'myComponent.label': 'Más información',
+  },
+  de: {
+    // ...existing keys
+    'myComponent.label': 'Mehr erfahren',
+  },
+  ja: {
+    // ...existing keys
+    'myComponent.label': 'もっと見る',
+  },
+  hi: {
+    // ...existing keys
+    'myComponent.label': 'और जानें',
+  },
+};
+```
+
+<Callout type="warning">
+  The TypeScript types are derived from the `en` dictionary. If you add a key to `en` but omit it from another locale, the build will fail with a type error. All six dictionaries must stay in sync.
+</Callout>
+
+**2. Accept `t` as a prop in your component and pass it from `DocsLayout.astro`:**
+
+```ts
+// src/components/MyComponent.astro
+import type { TFunction } from '@/lib/i18n';
+
+interface Props {
+  t: TFunction;
+}
+const { t } = Astro.props;
+```
+
+```astro
+<!-- src/layouts/DocsLayout.astro — add t={t} to your component -->
+<MyComponent t={t} />
+```
+
+**3. Use `t('myComponent.label')` in the template** — never hardcode the string.
+
+## Naming conventions
+
+Use a dot-separated namespace matching your component name:
+
+```
+toc.title        ✓   namespaced to table of contents
+search.placeholder ✓ namespaced to search
+myComponent.action ✓ namespaced to your component
+
+label            ✗   too generic, collides easily
+```
+
+Keys are lowercase with dots — no camelCase, no underscores.

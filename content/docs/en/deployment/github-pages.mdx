@@ -1,0 +1,81 @@
+---
+title: "GitHub Pages"
+description: "Deploy your Scrollup site to GitHub Pages using GitHub Actions for free static hosting."
+section: "Deployment"
+order: 41
+lastUpdated: "2026-04-04"
+---
+
+GitHub Pages provides free static hosting directly from your repository. Combined with GitHub Actions, it offers an automated deployment pipeline that builds and publishes your documentation on every push to the main branch.
+
+## GitHub Actions workflow
+
+Create a workflow file that builds your Scrollup site and deploys it to GitHub Pages:
+
+```yaml title=".github/workflows/deploy.yml"
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
+```
+
+## Repository settings
+
+In your GitHub repository settings:
+
+1. Go to **Settings** then **Pages**
+2. Under "Build and deployment", select **GitHub Actions** as the source
+3. The workflow above handles the rest
+
+## Base path
+
+If your site is hosted at `username.github.io/repo-name` (not a custom domain), configure the base path in Astro:
+
+```ts title="astro.config.ts"
+export default defineConfig({
+  site: 'https://username.github.io',
+  base: '/repo-name',
+  // ...
+})
+```
+
+<Callout type="note">
+  If you're using a custom domain (e.g., `docs.yourcompany.com`), you don't need a base path. Set `site` to your custom domain and add a `CNAME` file to your `public/` directory.
+</Callout>
+
+---
+
+## Build caching
+
+The workflow uses `actions/setup-node` with `cache: npm` to cache `node_modules` between builds. This reduces build times from minutes to seconds for subsequent deployments.

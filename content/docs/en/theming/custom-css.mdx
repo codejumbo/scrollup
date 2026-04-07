@@ -1,0 +1,66 @@
+---
+title: "Custom CSS"
+description: "How to extend and override Scrollup's styles while maintaining design consistency."
+section: "Theming"
+order: 22
+lastUpdated: "2026-04-04"
+---
+
+Scrollup's styles are built entirely on CSS custom properties, making it straightforward to customize the appearance without modifying component source code.
+
+## Overriding tokens
+
+The simplest way to customize Scrollup is to override CSS custom properties in `src/styles/tokens.css`. All components reference these properties, so changes propagate automatically.
+
+```css title="src/styles/tokens.css"
+:root {
+  /* Change the accent color */
+  --accent: #8B5CF6;
+  --accent-subtle: #F3F0FF;
+
+  /* Adjust the content width */
+  --content-w: 720px;
+}
+```
+
+## Adding custom styles
+
+For styles beyond token overrides, add a new CSS file and import it in `src/styles/global.css`:
+
+```css title="src/styles/custom.css"
+/* Custom styles for your documentation */
+.article img {
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+```
+
+```css title="src/styles/global.css"
+@import './reset.css';
+@import './tokens.css';
+@import './typography.css';
+@import './animations.css';
+@import './custom.css';
+```
+
+## Scoped component styles
+
+Each Astro component uses scoped `<style>` blocks, meaning styles don't leak between components. If you need to override a specific component's styles, use the `:global()` modifier in a parent component or add styles targeting the component's class names in your custom CSS file.
+
+<Callout type="warning">
+  Resist the urge to override too many styles. Scrollup's visual consistency comes from its constrained design system. If you find yourself overriding many properties, consider whether your changes are improving readability or just adding visual noise.
+</Callout>
+
+---
+
+## CSS architecture
+
+The styles are organized into focused files:
+
+| File | Purpose |
+|------|---------|
+| `reset.css` | Minimal box-sizing and smoothing reset |
+| `tokens.css` | CSS custom properties (light + dark) |
+| `typography.css` | Font faces, type scale, article prose styles |
+| `animations.css` | Entrance animation keyframes |
+| `global.css` | Imports all above, selection, scrollbar styles |

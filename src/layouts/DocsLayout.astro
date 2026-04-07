@@ -1,0 +1,216 @@
+---
+import '@/styles/global.css';
+import { ClientRouter } from 'astro:transitions';
+import { Topbar, Sidebar, TableOfContents, Breadcrumbs, PageLinks, Footer } from '@/lib/overrides';
+import PageBanner from '@/components/PageBanner.astro';
+import FallbackNotice from '@/components/FallbackNotice.astro';
+import SearchDialog from '@/components/SearchDialog.astro';
+import ThemeInit from '@/components/ThemeInit.astro';
+import DeprecatedBanner from '@/components/DeprecatedBanner.astro';
+import SEOHead from '@/components/SEOHead.astro';
+import MermaidInit from '@/components/MermaidInit.astro';
+import { getSiteName, formatDate } from '@/lib/config';
+import { resolvedConfig as siteConfig, globalHeadTags } from '@/lib/resolved-config';
+import type { NavSection, NavItem } from '@/lib/navigation';
+import { useTranslations, normalizeLocale, type Locale } from '@/lib/i18n';
+
+interface Props {
+  title: string;
+  description: string;
+  section: string;
+  sections: NavSection[];
+  currentSlug: string;
+  headings: { depth: number; slug: string; text: string }[];
+  prev: NavItem | null;
+  next: NavItem | null;
+  deprecated?: boolean;
+  lastUpdated?: string;
+  entryId?: string;
+  tableOfContents?: number | false;
+  editUrl?: string | false;
+  banner?: string;
+  head?: { tag: string; attrs?: Record<string, string>; content?: string }[];
+  locale?: string;
+  availableLocales?: Locale[];
+  isFallback?: boolean;
+  fallbackEnglishSlug?: string | null;
+}
+
+const {
+  title, description, section, sections, currentSlug, headings,
+  prev, next, deprecated, lastUpdated, entryId,
+  tableOfContents = 2, editUrl, banner, head = [],
+  locale = 'en', availableLocales,
+  isFallback = false, fallbackEnglishSlug,
+} = Astro.props;
+
+const safeLocale = normalizeLocale(locale);
+const t = useTranslations(safeLocale);
+const pageUrl = `${siteConfig.siteUrl}/${currentSlug}`;
+
+// Compute edit link URL
+let editLinkUrl: string | null = null;
+if (editUrl === false) {
+  editLinkUrl = null;
+} else if (typeof editUrl === 'string') {
+  editLinkUrl = editUrl;
+} else if (entryId) {
+  editLinkUrl = `${siteConfig.repoUrl}/edit/${siteConfig.editBranch}/content/docs/${entryId}.mdx`;
+}
+
+const showToc = tableOfContents !== false;
+const tocDepth = showToc ? (tableOfContents as number) : 2;
+
+const escapeAttr = (v: string) => v.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+---
+
+<!DOCTYPE html>
+<html lang={safeLocale}>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content={description} />
+  <link rel="icon" type="image/svg+xml" href={siteConfig.favicon} />
+  <title>{title} — {getSiteName(safeLocale)}</title>
+  <SEOHead title={`${title} — ${getSiteName(safeLocale)}`} description={description} url={pageUrl} />
+  {siteConfig.customCss.map((href) => <link rel="stylesheet" href={href} />)}
+  {head
+    .filter((tag) => !(tag.tag === 'script' && tag.content))
+    .map((tag) => (
+      <Fragment set:html={`<${tag.tag}${Object.entries(tag.attrs ?? {}).map(([k, v]) => ` ${k}="${escapeAttr(v)}"`).join('')}>${tag.content ?? ''}</${tag.tag}>`} />
+    ))
+  }
+  {globalHeadTags.map((tag) => (
+    <Fragment set:html={`<${tag.tag}${Object.entries(tag.attrs ?? {}).map(([k, v]) => ` ${k}="${escapeAttr(v)}"`).join('')}>${tag.content ?? ''}</${tag.tag}>`} />
+  ))}
+  <ClientRouter />
+  <ThemeInit />
+</head>
+<body>
+  <a href="#main-content" class="skip-link">{t('skip.link')}</a>
+  <Topbar currentLocale={safeLocale} currentSlug={currentSlug} availableLocales={availableLocales} hasSidebar />
+  <SearchDialog locale={safeLocale} />
+  <main class="shell" id="main-content">
+    <Sidebar sections={sections} currentSlug={currentSlug} t={t} />
+    <div class:list={['main-col', { 'no-toc': !showToc }]}>
+      <article class="article" transition:animate="fade">
+        <Breadcrumbs section={section} title={title} t={t} />
+        {deprecated && <DeprecatedBanner t={t} />}
+        {isFallback && fallbackEnglishSlug && <FallbackNotice t={t} englishSlug={fallbackEnglishSlug} />}
+        {banner && <PageBanner message={banner} t={t} />}
+        <slot />
+        {lastUpdated && (
+          <div class="last-updated">
+            {t('lastUpdated')}: {formatDate(lastUpdated)}
+          </div>
+        )}
+        {editLinkUrl && (
+          <a class="edit-link" href={editLinkUrl} target="_blank" rel="noopener noreferrer">
+            {t('editOnGitHub')}
+          </a>
+        )}
+        <PageLinks prev={prev} next={next} t={t} />
+      </article>
+    </div>
+    {showToc && (
+      <TableOfContents headings={headings} tocDepth={tocDepth} t={t} transition:animate="fade" />
+    )}
+  </main>
+  <Footer />
+  <MermaidInit />
+</body>
+</html>
+
+<style>
+  .skip-link {
+    position: absolute;
+    top: -100%;
+    inset-inline-start: 16px;
+    z-index: 9999;
+    padding: 8px 16px;
+    background: var(--accent);
+    color: #fff;
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: var(--radius);
+    text-decoration: none;
+    transition: top 0.1s;
+  }
+  .skip-link:focus { top: 8px; }
+
+  .shell {
+    max-width: var(--shell-max);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: var(--sidebar-w) 1fr var(--toc-w);
+    min-height: 100vh;
+    padding-top: 52px;
+  }
+
+  .shell:has(.main-col.no-toc) {
+    grid-template-columns: var(--sidebar-w) 1fr;
+  }
+
+  .main-col {
+    display: flex;
+    justify-content: center;
+    border-right: 1px solid var(--border-subtle);
+    min-width: 0;
+  }
+
+  .main-col.no-toc {
+    border-right: none;
+  }
+
+  .article {
+    width: 100%;
+    max-width: var(--content-w);
+    padding: 40px 48px 140px;
+  }
+
+  .last-updated {
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--text-3);
+    margin-top: 48px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .edit-link {
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--accent);
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 8px;
+    transition: color 0.12s;
+  }
+  .edit-link:hover {
+    color: var(--text-1);
+  }
+
+  /* Responsive: hide TOC below 1280px */
+  @media (max-width: 1279px) {
+    .shell {
+      grid-template-columns: var(--sidebar-w) 1fr;
+    }
+    .shell > :global(aside.toc) {
+      display: none;
+    }
+    .main-col {
+      border-right: none;
+    }
+  }
+
+  /* Responsive: mobile below 768px */
+  @media (max-width: 767px) {
+    .shell {
+      grid-template-columns: 1fr;
+    }
+    .article {
+      padding: 24px 20px 100px;
+    }
+  }
+</style>

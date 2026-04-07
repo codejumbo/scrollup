@@ -1,0 +1,178 @@
+---
+title: "Frontmatter reference"
+description: "Complete reference for all supported frontmatter fields in Scrollup doc pages."
+section: "Authoring"
+order: 21
+lastUpdated: "2026-04-05"
+---
+
+import { Callout, Badge } from '@/components/mdx';
+
+Every `.mdx` (and `.md`) file under `content/docs/` requires a YAML frontmatter block. This page documents every supported field.
+
+## Required fields
+
+| Field | Type | Description |
+|---|---|---|
+| `title` | `string` | Page title shown in the browser tab and sidebar |
+| `description` | `string` | Short description used in search results and meta tags |
+| `section` | `string` | Sidebar section name — must match an entry in `SECTION_ORDER` in `navigation.ts` |
+| `order` | `number` | Sort position within the section (lower = earlier) |
+
+## Optional fields
+
+### `draft`
+
+```yaml
+draft: true
+```
+
+Excludes the page from the build entirely. Use this for work-in-progress pages. Defaults to `false`.
+
+### `deprecated`
+
+```yaml
+deprecated: true
+```
+
+Shows an amber deprecation banner at the top of the page. Defaults to `false`.
+
+### `lastUpdated`
+
+```yaml
+lastUpdated: "2026-04-05"
+```
+
+ISO date string. Displayed as "Last updated: April 5, 2026" at the bottom of the page.
+
+### `author`
+
+```yaml
+author: "Jane Smith"
+```
+
+Author name for attribution.
+
+### `tags`
+
+```yaml
+tags: ["api", "configuration"]
+```
+
+Array of strings for categorization and filtering.
+
+### `tableOfContents`
+
+```yaml
+tableOfContents: 3       # show headings up to h3
+tableOfContents: false   # disable TOC entirely
+```
+
+Controls the table of contents. A number (2–4) sets the maximum heading depth shown. `false` removes the TOC column entirely. Defaults to `2`.
+
+### `slug`
+
+```yaml
+slug: "my-custom-url"
+```
+
+Overrides the URL route for this page. Without this field, the route is derived from the file path (`content/docs/en/authoring/my-page.mdx` → `/en/authoring/my-page`).
+
+<Callout type="warning">
+If two pages resolve to the same slug, a warning is printed during `npm run dev`. The collision must be fixed before deploying.
+</Callout>
+
+### `editUrl`
+
+```yaml
+editUrl: "https://github.com/my-org/my-repo/edit/main/content/docs/en/my-page.mdx"
+editUrl: false
+```
+
+Overrides the "Edit this page on GitHub" link. Set to `false` to hide the link on this page. When omitted, the link is auto-constructed from `siteConfig.repoUrl`.
+
+### `searchable`
+
+```yaml
+searchable: false
+```
+
+Excludes this page from the search index. The page still exists at its URL — only search is affected. Defaults to `true`.
+
+### `banner`
+
+```yaml
+banner: "⚠️ This page describes a beta feature. APIs may change."
+```
+
+Displays a dismissible banner at the top of the page content. Supports HTML inline elements (e.g. `<a>` links). Dismissed state persists for the browser session.
+
+### `head`
+
+```yaml
+head:
+  - tag: script
+    attrs:
+      src: "https://cdn.example.com/analytics.js"
+      defer: ""
+  - tag: link
+    attrs:
+      rel: "stylesheet"
+      href: "https://fonts.example.com/font.css"
+```
+
+Injects additional `<head>` tags for this page only. Only tags with an external `src` attribute are supported — inline scripts are not allowed for security reasons.
+
+### `prev` and `next`
+
+```yaml
+prev:
+  label: "Installation"
+  href: "/en/getting-started/installation"
+
+next: false
+```
+
+Overrides the previous/next navigation links at the bottom of the page. `false` hides the link. When omitted, links are auto-derived from the page order.
+
+### `sidebar`
+
+```yaml
+sidebar:
+  label: "Short name"    # Custom label in the sidebar (defaults to title)
+  hidden: true           # Exclude from sidebar and prev/next (page still accessible by URL)
+  badge:
+    text: "New"
+    variant: "success"   # "default" | "success" | "warning" | "info"
+```
+
+Controls how this page appears in the sidebar. `hidden: true` removes the page from navigation but keeps it accessible by URL — useful for changelog pages, changelogs, or unlisted drafts.
+
+### `template`
+
+```yaml
+template: "splash"   # "doc" (default) | "splash"
+```
+
+Sets the page layout. `doc` is the standard three-column docs layout. `splash` is a full-width layout without a sidebar — intended for landing or overview pages.
+
+### `hero`
+
+```yaml
+hero:
+  title: "My Product"
+  tagline: "The fastest way to ship documentation."
+  image:
+    src: "/images/hero.png"
+    alt: "Screenshot of the docs site"
+  actions:
+    - label: "Get started"
+      href: "/en/getting-started/installation"
+      variant: "primary"
+    - label: "View on GitHub"
+      href: "https://github.com/my-org/my-repo"
+      variant: "secondary"
+      external: true
+```
+
+Renders a hero section above the page content. Only meaningful on pages using `template: "splash"`. When `image` is set, a two-column layout (text left, image right) is used.

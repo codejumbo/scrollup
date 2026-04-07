@@ -1,0 +1,89 @@
+---
+title: "Routing and URL structure"
+description: "How Scrollup maps locale-prefixed URLs to content files, and how the routing layer handles redirects and fallbacks."
+section: "Internationalization"
+order: 22
+lastUpdated: "2026-04-05"
+---
+
+All Scrollup URLs include a locale prefix as the first path segment. The prefix is derived directly from the content file's location under `content/docs/`.
+
+## URL mapping
+
+The mapping is mechanical — no configuration required:
+
+```
+content/docs/en/getting-started/introduction.mdx  →  /en/getting-started/introduction
+content/docs/fr/getting-started/introduction.mdx  →  /fr/getting-started/introduction
+content/docs/ja/api-reference/cli.mdx             →  /ja/api-reference/cli
+```
+
+The locale is stripped from the display title and section label — it only appears in the URL, not in the sidebar or page heading.
+
+## The catch-all route
+
+A single Astro page file handles every doc URL:
+
+```
+src/pages/[...slug].astro
+```
+
+At build time, Astro calls `getStaticPaths()` which collects all entries from the `docs` content collection and generates one path per file. Each path gets the full slug — locale prefix included — so `/en/getting-started/introduction` and `/fr/getting-started/introduction` are separate static pages with separate HTML files in `dist/`.
+
+<Callout type="note">
+  Because the site is fully static, there is no runtime routing logic. Every URL is a real file in `dist/`. This means broken locale URLs produce a hard 404 from the CDN, not a redirect.
+</Callout>
+
+## Sidebar filtering
+
+The sidebar is locale-aware. `buildSidebar()` in `src/lib/navigation.ts` receives only the entries for the current locale — the `[...slug].astro` page calls `getPublishedDocs(locale)` before building sidebar data. This means the French sidebar only shows French pages, even if an equivalent English page exists.
+
+## Language switcher visibility
+
+The language switcher (the globe icon in the Topbar) only appears when the current page has at least one counterpart in another locale. The check is:
+
+```ts
+// src/pages/[...slug].astro
+const allEntries = await getPublishedDocs();
+const siblings = allEntries.filter(
+  (e) => stripLocale(e.id) === stripLocale(entry.id) && getLocale(e.id) !== locale
+);
+const hasTranslations = siblings.length > 0;
+```
+
+If you're mid-translation and only some pages have been ported, the switcher stays hidden on untranslated pages — readers are never shown a link that leads to a 404.
+
+## Root redirect
+
+The bare root path (`/`) is not a page — the site expects a locale prefix. By convention, redirect `/` to `/en/` in your CDN or deployment configuration. Most platforms handle this natively:
+
+<Tabs labels={["Vercel", "Netlify", "Cloudflare Pages"]}>
+  <Tab index={0}>
+    ```json title="vercel.json"
+    {
+      "redirects": [
+        { "source": "/", "destination": "/en/getting-started/introduction", "permanent": false }
+      ]
+    }
+    ```
+  </Tab>
+  <Tab index={1}>
+    ```toml title="netlify.toml"
+    [[redirects]]
+      from = "/"
+      to   = "/en/getting-started/introduction"
+      status = 302
+    ```
+  </Tab>
+  <Tab index={2}>
+    Add a `_redirects` file to the `public/` folder (Cloudflare Pages picks it up automatically):
+
+    ```
+    /  /en/getting-started/introduction  302
+    ```
+  </Tab>
+</Tabs>
+
+## Custom domain per locale
+
+If you want each locale on its own subdomain (`fr.docs.example.com`), that's a CDN-level concern — configure path rewrites in your CDN so that traffic to `fr.docs.example.com/*` maps to `/fr/*` on your origin. Scrollup itself has no opinion on this; its output is static files organized by locale prefix.

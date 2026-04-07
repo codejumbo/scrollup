@@ -1,0 +1,81 @@
+---
+title: "LinkCard"
+description: "A full-surface clickable card for linking to other pages or external resources."
+section: "Authoring"
+order: 23
+lastUpdated: "2026-04-05"
+---
+
+import { LinkCard, CardGrid, Callout } from '@/components/mdx';
+
+`<LinkCard>` renders an entire card as a single link — correct for accessibility and providing a large click target. Use it to point readers to related pages, guides, or external resources.
+
+## Usage
+
+```mdx
+import { LinkCard } from '@/components/mdx';
+
+<LinkCard
+  title="Installation"
+  description="Get Scrollup running in under 5 minutes."
+  href="/en/getting-started/installation"
+/>
+
+<LinkCard
+  title="GitHub repository"
+  href="https://github.com/codejumbo/scrollup"
+  external
+/>
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `title` | `string` | — | Card heading (required) |
+| `description` | `string` | — | Optional subtitle text |
+| `href` | `string` | — | Link destination (required) |
+| `external` | `boolean` | `false` | Adds `target="_blank"`, `rel="noopener noreferrer"`, and a ↗ indicator |
+
+## Examples
+
+### Single card
+
+<LinkCard
+  title="Frontmatter reference"
+  description="Every supported frontmatter field, with types and examples."
+  href="/en/authoring/frontmatter-reference"
+/>
+
+### External link
+
+<LinkCard
+  title="Astro documentation"
+  description="The framework powering Scrollup."
+  href="https://docs.astro.build"
+  external
+/>
+
+### Grid of link cards
+
+Combine with `<CardGrid>` for a two-column layout:
+
+```mdx
+import { LinkCard, CardGrid } from '@/components/mdx';
+
+<CardGrid>
+  <LinkCard title="Installation" href="/en/getting-started/installation" description="Set up your project" />
+  <LinkCard title="Configuration" href="/en/getting-started/configuration" description="Customize siteConfig" />
+  <LinkCard title="Theming" href="/en/theming/color-tokens" description="Colors and fonts" />
+  <LinkCard title="Deployment" href="/en/deployment/static-hosting" description="Ship to production" />
+</CardGrid>
+```
+
+<CardGrid>
+  <LinkCard title="Installation" href="/en/getting-started/installation" description="Set up your project" />
+  <LinkCard title="Theming" href="/en/theming/color-tokens" description="Colors and fonts" />
+</CardGrid>
+
+<Callout type="note">
+`<LinkCard>` works inside any grid container. Use `<CardGrid cols={1}>` for a full-width single-column list.
+</Callout>

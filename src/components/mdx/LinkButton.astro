@@ -1,0 +1,70 @@
+---
+interface Props {
+  href: string;
+  variant?: 'primary' | 'secondary';
+  external?: boolean;
+}
+
+const { href, variant = 'primary', external = false } = Astro.props;
+
+const externalAttrs = external
+  ? { target: '_blank', rel: 'noopener noreferrer' }
+  : {};
+---
+
+<a
+  href={href}
+  class:list={['link-button', `link-button--${variant}`]}
+  {...externalAttrs}
+>
+  <slot />
+  {external && <span class="link-button-ext" aria-hidden="true">↗</span>}
+</a>
+
+<style>
+  .link-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1;
+    padding: 9px 18px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: opacity 0.15s, background 0.15s, border-color 0.15s;
+    cursor: pointer;
+    margin-top: 1rem;
+  }
+
+  .link-button--primary {
+    background: var(--accent);
+    color: #fff;
+    border: 1px solid transparent;
+  }
+
+  .link-button--primary:hover {
+    opacity: 0.88;
+  }
+
+  [data-theme="dark"] .link-button--primary {
+    color: #0a0a10;
+  }
+
+  .link-button--secondary {
+    background: transparent;
+    color: var(--text-1);
+    border: 1px solid var(--border);
+  }
+
+  .link-button--secondary:hover {
+    background: var(--bg-surface);
+    border-color: var(--text-3);
+  }
+
+  .link-button-ext {
+    font-size: 12px;
+    opacity: 0.75;
+  }
+</style>

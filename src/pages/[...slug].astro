@@ -1,0 +1,190 @@
+---
+import { render } from 'astro:content';
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import SplashLayout from '@/layouts/SplashLayout.astro';
+import FallbackNotice from '@/components/FallbackNotice.astro';
+import { getPublishedDocs, buildSidebarWithConfig, getSortedEntries, getPrevNext, getLocale, stripLocale } from '@/lib/navigation';
+import { resolvedConfig } from '@/lib/resolved-config';
+import { SUPPORTED_LOCALES, DEFAULT_LOCALE, useTranslations, type Locale } from '@/lib/i18n';
+import type { NavItem } from '@/lib/navigation';
+
+import * as mdxComponents from '@/components/mdx';
+
+export async function getStaticPaths() {
+  const entries = await getPublishedDocs();
+
+  // Warn on slug collisions
+  if (import.meta.env.DEV) {
+    const seen = new Map<string, string>();
+    for (const e of entries) {
+      const route = e.data.slug ?? e.id;
+      if (seen.has(route)) {
+        console.warn(`[scrollup] Slug collision: "${route}" used by both "${seen.get(route)}" and "${e.id}"`);
+      } else {
+        seen.set(route, e.id);
+      }
+    }
+  }
+
+  // Build a map of localePath → entry for quick existence checks
+  const entryByLocalePath = new Map(entries.map((e) => [e.id, e]));
+
+  // English entries to generate fallback routes from
+  const englishEntries = entries.filter((e) => getLocale(e.id) === DEFAULT_LOCALE);
+
+  const paths = entries.map((entry) => ({
+    params: { slug: entry.data.slug ?? entry.id },
+    props: { entry, allEntries: entries, isFallback: false, fallbackEnglishSlug: null as string | null },
+  }));
+
+  // Seed the slug set from real entries so fallback generation can do O(1) collision checks
+  const addedSlugs = new Set(paths.map((p) => p.params.slug));
+
+  // Generate fallback routes for non-English locales that are missing a translation
+  for (const locale of SUPPORTED_LOCALES) {
+    if (locale === DEFAULT_LOCALE) continue;
+    for (const enEntry of englishEntries) {
+      const enPath = stripLocale(enEntry.id);
+      const localizedId = `${locale}/${enPath}`;
+      if (!entryByLocalePath.has(localizedId)) {
+        const fallbackSlug = `${locale}/${enPath}`;
+        if (!addedSlugs.has(fallbackSlug)) {
+          addedSlugs.add(fallbackSlug);
+          paths.push({
+            params: { slug: fallbackSlug },
+            props: {
+              entry: enEntry,
+              allEntries: entries,
+              isFallback: true,
+              fallbackEnglishSlug: enEntry.data.slug ?? enEntry.id,
+            },
+          });
+        }
+      }
+    }
+  }
+
+  return paths;
+}
+
+const { entry, allEntries, isFallback, fallbackEnglishSlug } = Astro.props;
+const { Content, headings } = await render(entry);
+
+// For fallback pages, use the locale from the route slug, not the entry
+const routeSlug = Astro.params.slug as string;
+const locale: Locale = isFallback
+  ? (routeSlug.split('/')[0] as Locale)
+  : getLocale(entry.id);
+
+const currentPath = stripLocale(entry.id);
+const navItems: NavItem[] = [];
+const availableLocales: Locale[] = [];
+
+if (isFallback) {
+  // For fallback pages: build sidebar from English entries, using locale-prefixed slugs.
+  // This gives a complete sidebar even when few translations exist.
+  for (const e of allEntries) {
+    if (getLocale(e.id) === DEFAULT_LOCALE) {
+      const enPath = stripLocale(e.id);
+      navItems.push({
+        title: e.data.title,
+        slug: `${locale}/${enPath}`,
+        section: e.data.section,
+        order: e.data.order,
+        sidebarLabel: e.data.sidebar?.label,
+        hidden: e.data.sidebar?.hidden,
+        badge: e.data.sidebar?.badge,
+      });
+    }
+    // availableLocales: add any locale that has a real translation
+    if (stripLocale(e.id) === currentPath) {
+      availableLocales.push(getLocale(e.id));
+    }
+  }
+  // Always include English if not already present
+  if (!availableLocales.includes(DEFAULT_LOCALE)) {
+    availableLocales.push(DEFAULT_LOCALE);
+  }
+} else {
+  for (const e of allEntries) {
+    const eLocale = getLocale(e.id);
+    if (eLocale === locale) {
+      navItems.push({
+        title: e.data.title,
+        slug: e.data.slug ?? e.id,
+        section: e.data.section,
+        order: e.data.order,
+        sidebarLabel: e.data.sidebar?.label,
+        hidden: e.data.sidebar?.hidden,
+        badge: e.data.sidebar?.badge,
+      });
+    }
+    if (stripLocale(e.id) === currentPath) {
+      availableLocales.push(eLocale);
+    }
+  }
+}
+
+const sections = buildSidebarWithConfig(navItems, resolvedConfig.sidebarLinks);
+const sorted = getSortedEntries(navItems);
+const currentSlug = isFallback ? routeSlug : (entry.data.slug ?? entry.id);
+
+// Compute prev/next with override support
+let { prev, next } = getPrevNext(sorted, currentSlug);
+
+if (entry.data.prev === false) {
+  prev = null;
+} else if (entry.data.prev) {
+  prev = { title: entry.data.prev.label, slug: entry.data.prev.href, section: '', order: 0, href: entry.data.prev.href };
+}
+if (entry.data.next === false) {
+  next = null;
+} else if (entry.data.next) {
+  next = { title: entry.data.next.label, slug: entry.data.next.href, section: '', order: 0, href: entry.data.next.href };
+}
+
+const template = entry.data.template ?? 'doc';
+const t = useTranslations(locale);
+---
+
+{template === 'splash' ? (
+  <SplashLayout
+    title={entry.data.title}
+    description={entry.data.description}
+    head={entry.data.head}
+    banner={entry.data.banner}
+    locale={locale}
+    availableLocales={availableLocales}
+    currentSlug={currentSlug}
+    hero={entry.data.hero}
+  >
+    {isFallback && fallbackEnglishSlug && <FallbackNotice t={t} englishSlug={fallbackEnglishSlug} />}
+    <Content components={mdxComponents} />
+  </SplashLayout>
+) : (
+  <DocsLayout
+    title={entry.data.title}
+    description={entry.data.description}
+    section={entry.data.section}
+    sections={sections}
+    currentSlug={currentSlug}
+    headings={headings}
+    prev={prev}
+    next={next}
+    deprecated={entry.data.deprecated}
+    lastUpdated={entry.data.lastUpdated}
+    entryId={entry.id}
+    tableOfContents={entry.data.tableOfContents}
+    editUrl={entry.data.editUrl}
+    banner={entry.data.banner}
+    head={entry.data.head}
+    locale={locale}
+    availableLocales={availableLocales}
+    isFallback={isFallback}
+    fallbackEnglishSlug={fallbackEnglishSlug}
+  >
+    <h1>{entry.data.title}</h1>
+    {entry.data.description && <p class="lead">{entry.data.description}</p>}
+    <Content components={mdxComponents} />
+  </DocsLayout>
+)}

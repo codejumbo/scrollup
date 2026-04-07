@@ -1,0 +1,130 @@
+---
+title: "Installation"
+description: "Get a documentation site running in under five minutes. You need Node.js 20 or later and a terminal."
+section: "Getting started"
+order: 2
+lastUpdated: "2026-04-04"
+---
+
+## Quick start
+
+Scaffold a new site with `create-scrollup`, install dependencies, and start the dev server.
+
+<Tabs labels={["npm", "pnpm", "yarn", "bun"]}>
+  <Tab index={0}>
+    ```sh title="Terminal"
+    npm create scrollup@latest my-docs
+    cd my-docs
+    npm install
+    npm run dev
+    ```
+  </Tab>
+  <Tab index={1}>
+    ```sh title="Terminal"
+    pnpm create scrollup@latest my-docs
+    cd my-docs
+    pnpm install
+    pnpm run dev
+    ```
+  </Tab>
+  <Tab index={2}>
+    ```sh title="Terminal"
+    yarn create scrollup my-docs
+    cd my-docs
+    yarn install
+    yarn dev
+    ```
+  </Tab>
+  <Tab index={3}>
+    ```sh title="Terminal"
+    bun create scrollup my-docs
+    cd my-docs
+    bun install
+    bun run dev
+    ```
+  </Tab>
+</Tabs>
+
+Open `localhost:4321` in your browser. Every edit to an `.mdx` file hot-reloads instantly.
+
+<Callout type="tip" title="Interactive setup">
+  After cloning, run `npm run setup` to customize the site name, accent color, and optionally clear the sample content.
+</Callout>
+
+---
+
+## Manual setup
+
+If you prefer more control, you can set up Scrollup step by step.
+
+<Steps>
+  <Step num={1} title="Scaffold and install">
+    Scaffold the template and install dependencies.
+
+    ```sh title="Terminal"
+    npm create scrollup@latest my-docs
+    cd my-docs
+    npm install
+    ```
+  </Step>
+  <Step num={2} title="Configure the site">
+    Edit `astro.config.ts` in the project root. This controls Expressive Code themes and Astro integrations. Customize your site's colors and typography through `src/styles/tokens.css`.
+  </Step>
+  <Step num={3} title="Add content">
+    Create `.mdx` files inside `content/docs/`. Each file needs frontmatter with `title`, `description`, `section`, and `order`. The folder structure maps directly to sidebar navigation.
+  </Step>
+</Steps>
+
+<Callout type="note">
+  Scrollup ships with carefully chosen defaults for colors and typography, so you can skip theming entirely and still get a polished result.
+</Callout>
+
+---
+
+## What you get
+
+After cloning, your project looks like this. Content lives in `content/docs/`, styling tokens in `src/styles/`, and everything else is standard Astro.
+
+```text title="Project structure"
+my-docs/
+  astro.config.ts          # Astro config + Expressive Code theme
+  src/
+    content.config.ts      # Content collection schema
+    styles/
+      tokens.css           # Design tokens (colors, spacing)
+    components/
+      mdx/                 # Custom MDX components
+    lib/
+      navigation.ts        # Sidebar + section ordering
+    layouts/
+      DocsLayout.astro     # Three-column docs layout
+    pages/
+      index.astro          # Landing page
+      [...slug].astro      # Doc page renderer
+  content/
+    docs/
+      getting-started/
+        introduction.mdx   # Your documentation pages
+        installation.mdx
+      authoring/
+        markdown-and-mdx.mdx
+  public/
+    fonts/                 # Self-hosted WOFF2 fonts
+    favicon.svg
+  package.json
+```
+
+Every `.mdx` file in `content/docs/` becomes a page. Section groups are defined by the `section` field in frontmatter, and display order is controlled by `SECTION_ORDER` in `src/lib/navigation.ts`.
+
+---
+
+## Next steps
+
+Your site is running. From here:
+
+<LinkGrid links={[
+  { title: "Markdown & MDX", description: "Learn how to write content and use components inside your pages.", href: "/en/authoring/markdown-and-mdx" },
+  { title: "Colors & typography", description: "Customize the look and feel to match your brand.", href: "/en/theming/colors-and-typography" },
+  { title: "Code blocks", description: "Syntax highlighting, line highlights, filenames, and copy buttons.", href: "/en/authoring/code-blocks" },
+  { title: "Deploy", description: "Ship to Vercel, Cloudflare Pages, or any static host.", href: "/en/deployment/vercel" }
+]} />

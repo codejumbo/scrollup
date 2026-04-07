@@ -1,0 +1,58 @@
+---
+interface Props {
+  type?: 'note' | 'warning' | 'tip';
+  title?: string;
+}
+
+const { type = 'note', title } = Astro.props;
+const defaultTitles: Record<string, string> = {
+  note: 'Note',
+  warning: 'Warning',
+  tip: 'Tip',
+};
+const label = title || defaultTitles[type] || 'Note';
+---
+
+<div class="aside-note">
+  <strong>{label}</strong>
+  <slot />
+</div>
+
+<style>
+  .aside-note {
+    background: var(--bg-note);
+    border-radius: 10px;
+    padding: 18px 22px;
+    margin: 28px 0;
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--text-2);
+  }
+
+  .aside-note strong {
+    font-family: var(--sans);
+    font-weight: 700;
+    color: var(--text-1);
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+    letter-spacing: 0.01em;
+  }
+
+  .aside-note :global(code) {
+    font-size: 0.85em;
+    background: color-mix(in srgb, var(--border) 60%, transparent);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+
+  .aside-note :global(p) {
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--text-2);
+    margin-bottom: 8px;
+  }
+  .aside-note :global(p:last-child) {
+    margin-bottom: 0;
+  }
+</style>

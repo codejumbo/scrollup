@@ -1,0 +1,64 @@
+---
+interface Props {
+  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+  path: string;
+  description?: string;
+}
+
+const { method, path, description } = Astro.props;
+
+const methodColors: Record<string, string> = {
+  GET: '#A0C9A0',
+  POST: '#DCC9A0',
+  PUT: '#A0BCD4',
+  PATCH: '#C9A0DC',
+  DELETE: '#D4A0A0',
+};
+---
+
+<div class="api-endpoint">
+  <div class="api-header">
+    <span class="api-method" style={`color: ${methodColors[method]}`}>{method}</span>
+    <code class="api-path">{path}</code>
+  </div>
+  {description && <p class="api-desc">{description}</p>}
+  <slot />
+</div>
+
+<style>
+  .api-endpoint {
+    background: var(--bg-note);
+    border-radius: 10px;
+    padding: 18px 22px;
+    margin: 28px 0;
+  }
+
+  .api-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+
+  .api-method {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+
+  .api-path {
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--text-1);
+    background: transparent;
+    padding: 0;
+  }
+
+  .api-desc {
+    font-size: 14.5px;
+    color: var(--text-2);
+    line-height: 1.6;
+    margin-bottom: 0;
+  }
+</style>

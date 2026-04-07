@@ -1,0 +1,252 @@
+---
+title: "Your first docs site"
+description: "A step-by-step walkthrough to go from a fresh clone to a published documentation site with your own content."
+section: "Getting started"
+order: 6
+lastUpdated: "2026-04-04"
+---
+
+This guide walks you through turning the Scrollup template into your own documentation site — from cloning to deploying with real content. By the end, you'll have a live site with your project's branding and pages.
+
+---
+
+## 1. Clone and customize
+
+<Steps>
+  <Step num={1} title="Scaffold the template">
+    ```sh title="Terminal"
+    npm create scrollup@latest my-project-docs
+    cd my-project-docs
+    npm install
+    ```
+  </Step>
+
+  <Step num={2} title="Run the setup wizard">
+    The interactive setup configures your site name, tagline, and accent color in one pass.
+
+    ```sh title="Terminal"
+    npm run setup
+    ```
+
+    You'll be prompted for:
+    - **Site name** — appears in the navbar and browser tab
+    - **Accent color** — the hex color used for links and highlights
+    - **Fonts** — optional custom font families
+    - **Clear sample content** — say **yes** to start with a blank slate
+  </Step>
+
+  <Step num={3} title="Start the dev server">
+    ```sh title="Terminal"
+    npm run dev
+    ```
+
+    Open `localhost:4321`. You should see the landing page with your site name.
+  </Step>
+</Steps>
+
+---
+
+## 2. Plan your content structure
+
+Before writing, decide how to organize your documentation. Scrollup groups pages into **sections** shown in the sidebar. A typical structure looks like:
+
+```text title="Example structure"
+content/docs/
+  getting-started/
+    introduction.mdx      (order: 1)
+    installation.mdx       (order: 2)
+    quickstart.mdx         (order: 3)
+  guides/
+    authentication.mdx     (order: 1)
+    data-fetching.mdx      (order: 2)
+    error-handling.mdx     (order: 3)
+  api/
+    overview.mdx           (order: 1)
+    endpoints.mdx          (order: 2)
+```
+
+<Callout type="tip" title="Keep it simple">
+  Start with 2-3 sections and a few pages each. You can always add more later — every new `.mdx` file auto-appears in the sidebar.
+</Callout>
+
+---
+
+## 3. Create your first page
+
+Create a folder and file for your first section.
+
+```sh title="Terminal"
+mkdir -p content/docs/en/guides
+```
+
+Then create `content/docs/en/guides/quickstart.mdx`:
+
+```mdx title="content/docs/en/guides/quickstart.mdx"
+---
+title: "Quickstart"
+description: "Get up and running with MyProject in under 5 minutes."
+section: "Guides"
+order: 1
+lastUpdated: "2026-04-04"
+---
+
+Welcome to MyProject! This guide covers the basics.
+
+## Installation
+
+Install via npm:
+
+\`\`\`sh title="Terminal"
+npm install my-project
+\`\`\`
+
+## Basic usage
+
+Import and initialize:
+
+\`\`\`ts title="app.ts"
+import { MyProject } from 'my-project';
+
+const app = new MyProject({ apiKey: 'your-key' });
+\`\`\`
+
+<Callout type="tip" title="Need help?">
+  Check the full API reference for all available options.
+</Callout>
+```
+
+---
+
+## 4. Register the new section
+
+Open `src/lib/navigation.ts` and add your section to `SECTION_ORDER`:
+
+```ts title="src/lib/navigation.ts"
+const SECTION_ORDER: Record<string, number> = {
+  'Guides': 0,        // your new section
+  'API': 1,
+  // add more sections as needed
+};
+```
+
+<Callout type="note">
+  The section name in `SECTION_ORDER` must match the `section` field in your frontmatter exactly — it's case-sensitive.
+</Callout>
+
+Save the file, and your new "Guides" section appears in the sidebar immediately.
+
+---
+
+## 5. Update the landing page
+
+Edit `src/pages/index.astro` to replace the default portal cards with your own sections. Find the `<!-- Portal Cards -->` section and update the card titles and links to match your content:
+
+```html title="src/pages/index.astro (excerpt)"
+<!-- Replace the existing card with your section -->
+<div class="portal-card">
+  <div class="card-header">
+    <h3>Guides</h3>
+  </div>
+  <div class="card-divider"></div>
+  <ul class="card-links">
+    <li><a href="/guides/quickstart">Quickstart</a></li>
+    <li><a href="/guides/authentication">Authentication</a></li>
+  </ul>
+</div>
+```
+
+---
+
+## 6. Use built-in components
+
+Scrollup includes components you can use directly in MDX without importing. Here are the ones you'll reach for most often:
+
+**Callouts** for important notes:
+```mdx
+<Callout type="warning" title="Breaking change">
+  The `v2` API removes the `legacyMode` option.
+</Callout>
+```
+
+**Steps** for tutorials:
+```mdx
+<Steps>
+  <Step num={1} title="Install">
+    Run `npm install my-project`.
+  </Step>
+  <Step num={2} title="Configure">
+    Create a config file.
+  </Step>
+</Steps>
+```
+
+**Tabs** for platform-specific instructions:
+```mdx
+<Tabs labels={["macOS", "Linux", "Windows"]}>
+  <Tab index={0}>Use Homebrew: `brew install my-project`</Tab>
+  <Tab index={1}>Use apt: `sudo apt install my-project`</Tab>
+  <Tab index={2}>Use the MSI installer from the releases page.</Tab>
+</Tabs>
+```
+
+See the full list in the [built-in components](/en/authoring/built-in-components) reference.
+
+---
+
+## 7. Build and deploy
+
+When your content is ready, build the static site:
+
+```sh title="Terminal"
+npm run build
+```
+
+This generates a `dist/` folder with plain HTML, CSS, and minimal JS. Deploy it anywhere:
+
+<Tabs labels={["Vercel", "Cloudflare Pages", "Netlify"]}>
+  <Tab index={0}>
+    Push to GitHub and import the repository in Vercel. It auto-detects Astro and deploys with zero configuration.
+
+    See the full [Vercel guide](/en/deployment/vercel).
+  </Tab>
+  <Tab index={1}>
+    Connect your GitHub repo in the Cloudflare dashboard. Set the build command to `npm run build` and the output directory to `dist`.
+
+    See the full [Cloudflare Pages guide](/en/deployment/cloudflare-pages).
+  </Tab>
+  <Tab index={2}>
+    Import from GitHub in Netlify. Set the build command to `npm run build` and publish directory to `dist`.
+
+    See the full [Netlify guide](/en/deployment/netlify).
+  </Tab>
+</Tabs>
+
+---
+
+## 8. Set your production URL
+
+Before deploying, update the `site` field in `astro.config.ts` to your production domain. This is used for sitemaps, RSS feeds, and canonical URLs:
+
+```ts title="astro.config.ts"
+export default defineConfig({
+  site: 'https://docs.your-project.com',
+  // ...
+});
+```
+
+---
+
+## Checklist
+
+Before sharing your docs site with users, run through this quick checklist:
+
+- [ ] Site name and description set via `npm run setup` or `src/lib/config.ts`
+- [ ] Sample content removed (or replaced with your own)
+- [ ] At least one section with 2+ pages
+- [ ] `SECTION_ORDER` in `navigation.ts` reflects your sections
+- [ ] Landing page portal cards updated with your links
+- [ ] `site` field in `astro.config.ts` set to production URL
+- [ ] `siteUrl` in `src/lib/config.ts` set to your production URL (used for canonical URLs and LLM indexes)
+- [ ] `repoUrl` in `src/lib/config.ts` points to your repository
+- [ ] Built successfully with `npm run build`
+- [ ] Deployed and accessible at your domain

@@ -1,0 +1,71 @@
+---
+title: "Project structure"
+description: "How files and folders in a Scrollup project map to pages, navigation, and configuration."
+section: "Getting started"
+order: 3
+lastUpdated: "2026-04-04"
+---
+
+A Scrollup project is deliberately minimal. There are no hidden configuration directories, no generated files you need to understand, and no framework-specific folder conventions beyond what Astro requires.
+
+## Directory layout
+
+```text title="Project root"
+my-docs/
+  astro.config.ts        # Astro and Scrollup configuration
+  src/
+    content.config.ts    # Content collection schema (Zod)
+    styles/              # Design tokens, typography, animations
+    components/          # Layout and MDX components
+    layouts/             # Page layout templates
+    pages/               # Astro routes (auto-generated from content)
+    lib/                 # Utilities (navigation, search)
+  content/
+    getting-started/     # Section folder → sidebar group
+      introduction.mdx   # Page → sidebar item
+      installation.mdx
+    guides/
+      deployment.mdx
+  public/
+    fonts/               # Self-hosted font files
+    favicon.svg
+  package.json
+```
+
+## How content maps to navigation
+
+The `content/` directory structure directly determines your sidebar navigation. Each subdirectory becomes a section label, and each `.mdx` file becomes a navigation item.
+
+The mapping is straightforward:
+
+- **Folder name** → section label (e.g., `getting-started/` → "Getting started")
+- **File name** → URL slug (e.g., `installation.mdx` → `/getting-started/installation`)
+- **Frontmatter `order`** → position within the section
+- **Frontmatter `section`** → overrides the section label if different from folder name
+
+## Frontmatter
+
+Every `.mdx` file requires frontmatter at the top of the file. This metadata controls how the page appears in navigation, search, and the browser tab.
+
+```yaml title="Required frontmatter"
+---
+title: "Installation"
+description: "Get started in under five minutes."
+section: "Getting started"
+order: 2
+---
+```
+
+Optional fields include `lastUpdated`, `author`, `tags`, `draft`, and `deprecated`. Pages with `draft: true` are excluded from production builds but visible during development.
+
+<Callout type="tip" title="Schema validation">
+  Frontmatter is validated at build time using Zod. If a required field is missing or a value has the wrong type, the build fails with a clear error message pointing to the exact file and field.
+</Callout>
+
+---
+
+## Static assets
+
+Files in the `public/` directory are served as-is at the root URL. Place images, downloadable files, and other static assets here. They are not processed or optimized by the build pipeline.
+
+For images referenced in MDX content, prefer placing them alongside the content file or in a shared `public/images/` directory.

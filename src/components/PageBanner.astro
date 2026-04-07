@@ -1,0 +1,80 @@
+---
+import type { TFunction } from '@/lib/i18n';
+
+interface Props {
+  message: string;
+  dismissible?: boolean;
+  t: TFunction;
+}
+
+const { message, dismissible = true, t } = Astro.props;
+---
+
+<div class="page-banner" data-banner-message={message}>
+  <span class="page-banner-text" set:html={message} />
+  {dismissible && (
+    <button class="page-banner-dismiss" aria-label={t('banner.dismiss')}>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  )}
+</div>
+
+<script>
+  function initBanners() {
+    const banners = document.querySelectorAll<HTMLElement>('[data-banner-message]');
+    for (const banner of banners) {
+      const message = banner.dataset.bannerMessage ?? '';
+      // Simple hash so the key is stable across navigations
+      let hash = 0;
+      for (let i = 0; i < message.length; i++) {
+        hash = (Math.imul(31, hash) + message.charCodeAt(i)) | 0;
+      }
+      const key = `banner-dismissed-${Math.abs(hash)}`;
+      if (sessionStorage.getItem(key)) {
+        banner.remove();
+        continue;
+      }
+      const btn = banner.querySelector('.page-banner-dismiss');
+      btn?.addEventListener('click', () => {
+        sessionStorage.setItem(key, '1');
+        banner.remove();
+      });
+    }
+  }
+
+  initBanners();
+  document.addEventListener('astro:after-swap', initBanners);
+</script>
+
+<style>
+  .page-banner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: color-mix(in srgb, var(--accent) 10%, var(--bg-surface));
+    border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    margin-bottom: 24px;
+    font-family: var(--sans);
+    font-size: 13.5px;
+    color: var(--text-2);
+  }
+
+  .page-banner-text { flex: 1; }
+
+  .page-banner-dismiss {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: var(--text-3);
+    cursor: pointer;
+    padding: 2px;
+    border-radius: 3px;
+    transition: color 0.12s;
+  }
+  .page-banner-dismiss:hover { color: var(--text-1); }
+</style>

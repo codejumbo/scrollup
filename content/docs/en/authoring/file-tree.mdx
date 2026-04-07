@@ -1,0 +1,130 @@
+---
+title: "File tree"
+description: "Display directory structures as visual file trees using the FileTree component."
+section: "Authoring"
+order: 18
+lastUpdated: "2026-04-05"
+---
+
+The `<FileTree>` component renders a nested markdown list as a visual directory tree, complete with file and folder icons. Use it to show project layouts, configuration structures, or any hierarchical file system.
+
+---
+
+## Basic usage
+
+Write a nested markdown list inside `<FileTree>`. Items ending with `/` become folders; all others are treated as files.
+
+```text
+<FileTree>
+- src/
+  - pages/
+    - index.astro
+  - components/
+    - Header.astro
+    - Footer.astro
+- astro.config.ts
+- package.json
+</FileTree>
+```
+
+<FileTree>
+- src/
+  - pages/
+    - index.astro
+  - components/
+    - Header.astro
+    - Footer.astro
+- astro.config.ts
+- package.json
+</FileTree>
+
+---
+
+## Highlighting a file
+
+Wrap a filename in `**bold**` to highlight it in accent color — useful for pointing out which file is being discussed.
+
+```text
+<FileTree>
+- src/
+  - pages/
+    - **[...slug].astro**
+    - index.astro
+- **astro.config.ts**
+</FileTree>
+```
+
+<FileTree>
+- src/
+  - pages/
+    - **[...slug].astro**
+    - index.astro
+- **astro.config.ts**
+</FileTree>
+
+---
+
+## Omitting content
+
+Use `...` as a list item to indicate that some entries have been left out for brevity.
+
+```text
+<FileTree>
+- content/
+  - docs/
+    - en/
+      - getting-started/
+        - installation.mdx
+        - ...
+    - fr/
+    - ...
+</FileTree>
+```
+
+<FileTree>
+- content/
+  - docs/
+    - en/
+      - getting-started/
+        - installation.mdx
+        - ...
+    - fr/
+    - ...
+</FileTree>
+
+---
+
+## Scrollup project structure
+
+Here is the full structure of a fresh Scrollup project:
+
+<FileTree>
+- **content/**
+  - docs/
+    - en/
+      - getting-started/
+      - authoring/
+      - theming/
+      - api-reference/
+      - deployment/
+- **src/**
+  - components/
+    - mdx/
+  - layouts/
+    - **DocsLayout.astro**
+  - lib/
+    - **i18n.ts**
+    - **navigation.ts**
+  - pages/
+    - **[...slug].astro**
+    - index.astro
+  - styles/
+    - **tokens.css**
+  - content.config.ts
+- **astro.config.ts**
+- package.json
+</FileTree>
+
+<Callout type="tip">
+  FileTree takes no props — all structure comes from the nested list in the slot. Nest as deeply as needed; indentation determines the hierarchy.
+</Callout>

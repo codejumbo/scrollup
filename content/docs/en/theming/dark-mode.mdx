@@ -1,0 +1,56 @@
+---
+title: "Dark mode"
+description: "A hand-picked dark theme that respects your system preference and stays comfortable for long reading sessions."
+section: "Theming"
+order: 21
+lastUpdated: "2026-04-04"
+---
+
+Scrollup includes a dark mode designed for extended reading comfort. Unlike themes that simply invert lightness values, every dark mode color was individually selected to ensure proper contrast, readability, and visual harmony.
+
+## How it works
+
+Dark mode is controlled by the `data-theme` attribute on the `<html>` element. When set to `"dark"`, CSS custom properties switch to their dark variants.
+
+```css title="src/styles/tokens.css"
+[data-theme="dark"] {
+  --bg: #161619;
+  --bg-surface: #1C1C21;
+  --bg-code: #0E0E12;
+  --text-1: #ECECEC;
+  --text-2: #9494A0;
+  --text-3: #5A5A66;
+  --accent: #70B8FF;
+  --border: #2E2E38;
+}
+```
+
+## Theme toggle
+
+The theme toggle cycles through three states: **light** → **system** → **dark**. The current preference is stored in `localStorage` under the key `theme-preference`.
+
+- **Light** — forces light mode regardless of OS setting
+- **System** — follows the operating system's `prefers-color-scheme` setting and responds to changes in real time
+- **Dark** — forces dark mode regardless of OS setting
+
+A small inline script in the `<head>` reads the preference and applies the correct theme before the page renders, preventing the flash of wrong theme that plagues many dark mode implementations.
+
+## Code blocks stay dark
+
+Code blocks use their own color scheme (`--bg-code`) that remains dark in both light and dark modes. This prevents the jarring visual switch where code alternates between light and dark backgrounds as you toggle the page theme.
+
+In light mode, the dark code blocks provide clear visual separation from the surrounding content. In dark mode, they blend naturally with the darker page background.
+
+<Callout type="note">
+  The accent color shifts from `#0066FF` in light mode to `#70B8FF` in dark mode. The lighter blue ensures links and active states remain clearly visible against the dark background without appearing washed out.
+</Callout>
+
+---
+
+## Design decisions
+
+**No pure black background.** The dark background is `#161619` — a deep, slightly cool-tinted dark gray. Pure black (`#000000`) creates excessive contrast with white text, causing eye strain. The slight warmth reduces this effect.
+
+**No pure white text.** Body text uses `#ECECEC`, which avoids the halation (glow) effect that pure white text creates on dark backgrounds. Secondary text (`#9494A0`) and tertiary text (`#5A5A66`) maintain clear hierarchy.
+
+**Warm-cool balance.** Light mode uses warm tones (off-white background, warm borders). Dark mode shifts slightly cool (blue-tinted dark, cooler borders). This creates a natural feeling of "warmth in light, calm in dark" that matches how we experience physical environments.

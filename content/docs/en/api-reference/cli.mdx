@@ -1,0 +1,135 @@
+---
+title: "CLI"
+description: "Command-line interface reference for development, building, and content management."
+section: "API reference"
+order: 31
+lastUpdated: "2026-04-04"
+---
+
+Scrollup uses Astro's CLI for development and builds, plus a set of helper scripts for setup, validation, and content scaffolding. All commands are defined in `package.json` and run via npm, pnpm, or yarn.
+
+## Core commands
+
+### dev
+
+```sh title="Terminal"
+npm run dev
+```
+
+Starts the development server at `localhost:4321` with hot module replacement. Every change to an `.mdx` file, component, or style triggers an instant reload.
+
+Options:
+- `--port <number>` — Use a different port (default: 4321)
+- `--host` — Expose to network (for testing on other devices)
+
+### build
+
+```sh title="Terminal"
+npm run build
+```
+
+Generates the production static site to the `dist/` directory. The build process:
+
+1. Validates all frontmatter against the Zod schema
+2. Compiles MDX to HTML with syntax highlighting
+3. Generates the search index
+4. Optimizes assets (CSS, fonts)
+
+If validation fails, the build exits with a clear error message pointing to the problem file and field.
+
+### preview
+
+```sh title="Terminal"
+npm run preview
+```
+
+Serves the `dist/` directory locally, simulating a production deployment. Use this to verify the build output before deploying.
+
+<Callout type="tip">
+  Always run `npm run preview` before deploying to catch issues that only appear in production builds, such as broken relative links or missing assets.
+</Callout>
+
+---
+
+## Setup and scaffolding
+
+### setup
+
+```sh title="Terminal"
+npm run setup
+```
+
+An interactive script that walks you through customizing a fresh Scrollup scaffold. Prompts for:
+
+- Site name and URL
+- Accent color (picks from the preset palette or accepts a custom hex)
+- Whether to clear the sample content from `content/docs/en/`
+
+Run this once after scaffolding. Safe to skip — all values can be changed manually in `src/lib/config.ts` and `src/styles/tokens.css` at any time.
+
+### new-page
+
+```sh title="Terminal"
+npm run new-page
+```
+
+An interactive script that scaffolds a new MDX page. Prompts for the section, page title, and description, then writes a correctly formatted `.mdx` file in the right folder with pre-filled frontmatter.
+
+Saves you from manually getting the frontmatter fields right when adding a new doc page.
+
+---
+
+## Validation
+
+### validate
+
+```sh title="Terminal"
+npm run validate
+```
+
+Runs full project validation in sequence: TypeScript/Astro type checking followed by a link check. Equivalent to:
+
+```sh title="Terminal"
+npx astro check && npm run check-links
+```
+
+Run this before deploying or in CI to catch issues early. See [CI/CD automation](/en/deployment/ci-cd) for a workflow example.
+
+### check-links
+
+```sh title="Terminal"
+npm run check-links
+```
+
+Scans all MDX files for internal links and verifies each target page exists. Reports broken links with the file and line number so they're easy to find and fix.
+
+<Callout type="note">
+  `check-links` only validates internal links (those starting with `/`). External URLs are not checked.
+</Callout>
+
+### check-freshness
+
+```sh title="Terminal"
+npm run check-freshness
+```
+
+Scans all published pages and reports any whose `lastUpdated` frontmatter field is older than a configurable threshold (default: 180 days). Useful for keeping large documentation sets from going stale.
+
+Output example:
+
+```
+⚠  content/docs/en/deployment/netlify.mdx — last updated 2025-09-12 (205 days ago)
+⚠  content/docs/en/theming/dark-mode.mdx  — last updated 2025-10-01 (186 days ago)
+2 pages may need review.
+```
+
+---
+
+## Exit codes
+
+| Code | Meaning |
+|------|---------|
+| `0` | Success |
+| `1` | Build error (invalid frontmatter, broken imports, syntax errors) |
+
+Build errors include the file path and line number, making it straightforward to locate and fix problems.

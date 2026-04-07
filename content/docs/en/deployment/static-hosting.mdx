@@ -1,0 +1,60 @@
+---
+title: "Static hosting"
+description: "Deploy your Scrollup documentation site to any static hosting provider. Build once, host anywhere."
+section: "Deployment"
+order: 39
+lastUpdated: "2026-04-04"
+---
+
+Scrollup builds to a `dist/` directory of static HTML, CSS, and JavaScript. No server runtime is required — any static hosting provider works.
+
+## Build
+
+```sh title="Terminal"
+npm run build
+```
+
+The output is in the `dist/` directory. You can preview the production build locally:
+
+```sh title="Terminal"
+npm run preview
+```
+
+## Deploy to any static host
+
+Upload or push the contents of `dist/` to your hosting provider. Most platforms auto-detect static sites or let you configure the output directory.
+
+### Netlify
+
+Set the build command to `npm run build` and the publish directory to `dist/`. Netlify auto-detects Astro projects.
+
+```toml title="netlify.toml"
+[build]
+  command = "npm run build"
+  publish = "dist"
+```
+
+### Cloudflare Pages
+
+In the Cloudflare dashboard, set:
+- **Build command:** `npm run build`
+- **Build output directory:** `dist`
+
+### GitHub Pages
+
+See the dedicated [GitHub Pages guide](/en/deployment/github-pages) for workflow configuration.
+
+### Vercel
+
+See the dedicated [Vercel guide](/en/deployment/vercel) for project settings.
+
+<Callout type="tip">
+  Since Scrollup is a standard Astro static site, any provider that serves static files will work. The guides above are just the most common options.
+</Callout>
+
+## Platform-specific guides
+
+<LinkGrid links={[
+  { title: "GitHub Pages", description: "Deploy with GitHub Actions.", href: "/en/deployment/github-pages" },
+  { title: "Vercel", description: "Zero-config deployment.", href: "/en/deployment/vercel" }
+]} />

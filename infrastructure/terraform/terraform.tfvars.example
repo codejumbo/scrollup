@@ -1,0 +1,13 @@
+# Copy to terraform.tfvars and fill in real values
+# NEVER commit terraform.tfvars
+
+# Cloudflare API token: Dashboard → My Profile → API Tokens
+# Permissions: Zone:DNS:Edit + Zone:Zone:Read for scrollup.io
+cloudflare_api_token = "YOUR_CLOUDFLARE_API_TOKEN"
+
+# Zone ID: Cloudflare dashboard → scrollup.io → Overview → right sidebar
+# This is scrollup.io zone ID — NOT the same as prepcurve.com's zone ID
+cloudflare_zone_id = "YOUR_SCROLLUP_IO_ZONE_ID"
+
+# Current server IP — update if server is rebuilt with a new IP
+server_ip = "5.161.88.56"

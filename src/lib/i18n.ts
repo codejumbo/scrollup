@@ -1,0 +1,310 @@
+export const SUPPORTED_LOCALES = ['en', 'fr', 'es', 'de', 'ja', 'hi'] as const;
+export type Locale = (typeof SUPPORTED_LOCALES)[number];
+export const DEFAULT_LOCALE: Locale = 'en';
+
+export const LOCALE_NAMES: Record<Locale, string> = {
+  en: 'English',
+  fr: 'Français',
+  es: 'Español',
+  de: 'Deutsch',
+  ja: '日本語',
+  hi: 'हिन्दी',
+};
+
+// RTL locales — empty until Arabic/Hebrew support is added
+export const RTL_LOCALES: Locale[] = [];
+
+export function isValidLocale(v: string): v is Locale {
+  return (SUPPORTED_LOCALES as readonly string[]).includes(v);
+}
+
+const translations = {
+  en: {
+    // Existing keys
+    'toc.title': 'On this page',
+    'nav.prev': 'Previous',
+    'nav.next': 'Next',
+    'lastUpdated': 'Last updated',
+    'editOnGitHub': 'Edit this page on GitHub',
+    'search.placeholder': 'Search documentation...',
+    'search.empty': 'Type to search...',
+    'search.loading': 'Loading search index...',
+    'search.noResults': 'No results found.',
+    'deprecated.notice': 'This page is deprecated and may be removed in a future version.',
+    'breadcrumbs.docs': 'Docs',
+    'lang.label': 'Language',
+    // New keys (Phase 2.1)
+    'skip.link': 'Skip to content',
+    'mobile.menu.open': 'Open navigation menu',
+    'mobile.menu.close': 'Close navigation menu',
+    'breadcrumb.home': 'Home',
+    'search.open': 'Open search',
+    'search.close': 'Close search',
+    'copy.code': 'Copy code',
+    'copy.success': 'Copied!',
+    'theme.light': 'Switch to light theme',
+    'theme.dark': 'Switch to dark theme',
+    'theme.system': 'Use system theme',
+    'lang.select': 'Select language',
+    'sidebar.toggle': 'Toggle sidebar',
+    'sidebar.open': 'Open sidebar',
+    'sidebar.close': 'Close sidebar',
+    'page.notTranslated': 'This page is not available in your language.',
+    'page.notTranslated.view': 'View in English',
+    'banner.dismiss': 'Dismiss banner',
+    '404.title': 'Page not found',
+    '404.back': 'Back to home',
+    'nav.home': 'Home',
+    'section.getting-started': 'Getting started',
+    'section.authoring': 'Authoring',
+    'section.theming': 'Theming',
+    'section.internationalization': 'Internationalization',
+    'section.api-reference': 'API reference',
+    'section.deployment': 'Deployment',
+  },
+  fr: {
+    'toc.title': 'Sur cette page',
+    'nav.prev': 'Précédent',
+    'nav.next': 'Suivant',
+    'lastUpdated': 'Dernière mise à jour',
+    'editOnGitHub': 'Modifier cette page sur GitHub',
+    'search.placeholder': 'Rechercher dans la documentation...',
+    'search.empty': 'Commencez à taper...',
+    'search.loading': "Chargement de l'index...",
+    'search.noResults': 'Aucun résultat trouvé.',
+    'deprecated.notice': 'Cette page est obsolète et pourrait être supprimée dans une version future.',
+    'breadcrumbs.docs': 'Docs',
+    'lang.label': 'Langue',
+    'skip.link': 'Aller au contenu',
+    'mobile.menu.open': 'Ouvrir le menu de navigation',
+    'mobile.menu.close': 'Fermer le menu de navigation',
+    'breadcrumb.home': 'Accueil',
+    'search.open': 'Ouvrir la recherche',
+    'search.close': 'Fermer la recherche',
+    'copy.code': 'Copier le code',
+    'copy.success': 'Copié !',
+    'theme.light': 'Passer au thème clair',
+    'theme.dark': 'Passer au thème sombre',
+    'theme.system': 'Utiliser le thème système',
+    'lang.select': 'Choisir la langue',
+    'sidebar.toggle': 'Basculer la barre latérale',
+    'sidebar.open': 'Ouvrir la barre latérale',
+    'sidebar.close': 'Fermer la barre latérale',
+    'page.notTranslated': "Cette page n'est pas disponible dans votre langue.",
+    'page.notTranslated.view': 'Voir en anglais',
+    'banner.dismiss': 'Fermer la bannière',
+    '404.title': 'Page introuvable',
+    '404.back': "Retour à l'accueil",
+    'nav.home': 'Accueil',
+    'section.getting-started': 'Premiers pas',
+    'section.authoring': 'Rédaction',
+    'section.theming': 'Thèmes',
+    'section.internationalization': 'Internationalisation',
+    'section.api-reference': 'Référence API',
+    'section.deployment': 'Déploiement',
+  },
+  es: {
+    'toc.title': 'En esta página',
+    'nav.prev': 'Anterior',
+    'nav.next': 'Siguiente',
+    'lastUpdated': 'Última actualización',
+    'editOnGitHub': 'Editar en GitHub',
+    'search.placeholder': 'Buscar en la documentación...',
+    'search.empty': 'Comience a escribir...',
+    'search.loading': 'Cargando el índice...',
+    'search.noResults': 'No se encontraron resultados.',
+    'deprecated.notice': 'Esta página está obsoleta y podría eliminarse en una versión futura.',
+    'breadcrumbs.docs': 'Docs',
+    'lang.label': 'Idioma',
+    'skip.link': 'Saltar al contenido',
+    'mobile.menu.open': 'Abrir menú de navegación',
+    'mobile.menu.close': 'Cerrar menú de navegación',
+    'breadcrumb.home': 'Inicio',
+    'search.open': 'Abrir búsqueda',
+    'search.close': 'Cerrar búsqueda',
+    'copy.code': 'Copiar código',
+    'copy.success': '¡Copiado!',
+    'theme.light': 'Cambiar a tema claro',
+    'theme.dark': 'Cambiar a tema oscuro',
+    'theme.system': 'Usar tema del sistema',
+    'lang.select': 'Seleccionar idioma',
+    'sidebar.toggle': 'Alternar barra lateral',
+    'sidebar.open': 'Abrir barra lateral',
+    'sidebar.close': 'Cerrar barra lateral',
+    'page.notTranslated': 'Esta página no está disponible en tu idioma.',
+    'page.notTranslated.view': 'Ver en inglés',
+    'banner.dismiss': 'Cerrar banner',
+    '404.title': 'Página no encontrada',
+    '404.back': 'Volver al inicio',
+    'nav.home': 'Inicio',
+    'section.getting-started': 'Primeros pasos',
+    'section.authoring': 'Autoría',
+    'section.theming': 'Temas',
+    'section.internationalization': 'Internacionalización',
+    'section.api-reference': 'Referencia de API',
+    'section.deployment': 'Despliegue',
+  },
+  de: {
+    'toc.title': 'Auf dieser Seite',
+    'nav.prev': 'Vorherige',
+    'nav.next': 'Nächste',
+    'lastUpdated': 'Zuletzt aktualisiert',
+    'editOnGitHub': 'Auf GitHub bearbeiten',
+    'search.placeholder': 'Dokumentation durchsuchen...',
+    'search.empty': 'Suchbegriff eingeben...',
+    'search.loading': 'Suchindex wird geladen...',
+    'search.noResults': 'Keine Ergebnisse gefunden.',
+    'deprecated.notice': 'Diese Seite ist veraltet und könnte in einer zukünftigen Version entfernt werden.',
+    'breadcrumbs.docs': 'Docs',
+    'lang.label': 'Sprache',
+    'skip.link': 'Zum Inhalt springen',
+    'mobile.menu.open': 'Navigationsmenü öffnen',
+    'mobile.menu.close': 'Navigationsmenü schließen',
+    'breadcrumb.home': 'Startseite',
+    'search.open': 'Suche öffnen',
+    'search.close': 'Suche schließen',
+    'copy.code': 'Code kopieren',
+    'copy.success': 'Kopiert!',
+    'theme.light': 'Zum hellen Thema wechseln',
+    'theme.dark': 'Zum dunklen Thema wechseln',
+    'theme.system': 'Systemthema verwenden',
+    'lang.select': 'Sprache auswählen',
+    'sidebar.toggle': 'Seitenleiste umschalten',
+    'sidebar.open': 'Seitenleiste öffnen',
+    'sidebar.close': 'Seitenleiste schließen',
+    'page.notTranslated': 'Diese Seite ist in Ihrer Sprache nicht verfügbar.',
+    'page.notTranslated.view': 'Auf Englisch anzeigen',
+    'banner.dismiss': 'Banner schließen',
+    '404.title': 'Seite nicht gefunden',
+    '404.back': 'Zurück zur Startseite',
+    'nav.home': 'Startseite',
+    'section.getting-started': 'Erste Schritte',
+    'section.authoring': 'Inhaltserstellung',
+    'section.theming': 'Themes',
+    'section.internationalization': 'Internationalisierung',
+    'section.api-reference': 'API-Referenz',
+    'section.deployment': 'Bereitstellung',
+  },
+  ja: {
+    'toc.title': 'このページの内容',
+    'nav.prev': '前へ',
+    'nav.next': '次へ',
+    'lastUpdated': '最終更新',
+    'editOnGitHub': 'GitHubで編集',
+    'search.placeholder': 'ドキュメントを検索...',
+    'search.empty': '検索ワードを入力...',
+    'search.loading': '検索インデックスを読み込み中...',
+    'search.noResults': '結果が見つかりませんでした。',
+    'deprecated.notice': 'このページは非推奨であり、将来のバージョンで削除される可能性があります。',
+    'breadcrumbs.docs': 'ドキュメント',
+    'lang.label': '言語',
+    'skip.link': 'コンテンツへスキップ',
+    'mobile.menu.open': 'ナビゲーションメニューを開く',
+    'mobile.menu.close': 'ナビゲーションメニューを閉じる',
+    'breadcrumb.home': 'ホーム',
+    'search.open': '検索を開く',
+    'search.close': '検索を閉じる',
+    'copy.code': 'コードをコピー',
+    'copy.success': 'コピーしました！',
+    'theme.light': 'ライトテーマに切り替え',
+    'theme.dark': 'ダークテーマに切り替え',
+    'theme.system': 'システムテーマを使用',
+    'lang.select': '言語を選択',
+    'sidebar.toggle': 'サイドバーを切り替え',
+    'sidebar.open': 'サイドバーを開く',
+    'sidebar.close': 'サイドバーを閉じる',
+    'page.notTranslated': 'このページはお使いの言語では利用できません。',
+    'page.notTranslated.view': '英語で表示',
+    'banner.dismiss': 'バナーを閉じる',
+    '404.title': 'ページが見つかりません',
+    '404.back': 'ホームに戻る',
+    'nav.home': 'ホーム',
+    'section.getting-started': 'はじめに',
+    'section.authoring': 'コンテンツ作成',
+    'section.theming': 'テーマ',
+    'section.internationalization': '国際化',
+    'section.api-reference': 'APIリファレンス',
+    'section.deployment': 'デプロイ',
+  },
+  hi: {
+    'toc.title': 'इस पृष्ठ पर',
+    'nav.prev': 'पिछला',
+    'nav.next': 'अगला',
+    'lastUpdated': 'अंतिम अपडेट',
+    'editOnGitHub': 'GitHub पर संपादित करें',
+    'search.placeholder': 'दस्तावेज़ खोजें...',
+    'search.empty': 'खोजने के लिए टाइप करें...',
+    'search.loading': 'खोज अनुक्रमणिका लोड हो रही है...',
+    'search.noResults': 'कोई परिणाम नहीं मिला।',
+    'deprecated.notice': 'यह पृष्ठ अप्रचलित है और भविष्य के संस्करण में हटाया जा सकता है।',
+    'breadcrumbs.docs': 'दस्तावेज़',
+    'lang.label': 'भाषा',
+    'skip.link': 'सामग्री पर जाएं',
+    'mobile.menu.open': 'नेविगेशन मेनू खोलें',
+    'mobile.menu.close': 'नेविगेशन मेनू बंद करें',
+    'breadcrumb.home': 'होम',
+    'search.open': 'खोज खोलें',
+    'search.close': 'खोज बंद करें',
+    'copy.code': 'कोड कॉपी करें',
+    'copy.success': 'कॉपी हो गया!',
+    'theme.light': 'लाइट थीम पर जाएं',
+    'theme.dark': 'डार्क थीम पर जाएं',
+    'theme.system': 'सिस्टम थीम उपयोग करें',
+    'lang.select': 'भाषा चुनें',
+    'sidebar.toggle': 'साइडबार टॉगल करें',
+    'sidebar.open': 'साइडबार खोलें',
+    'sidebar.close': 'साइडबार बंद करें',
+    'page.notTranslated': 'यह पृष्ठ आपकी भाषा में उपलब्ध नहीं है।',
+    'page.notTranslated.view': 'अंग्रेज़ी में देखें',
+    'banner.dismiss': 'बैनर बंद करें',
+    '404.title': 'पृष्ठ नहीं मिला',
+    '404.back': 'होम पर वापस जाएं',
+    'nav.home': 'होम',
+    'section.getting-started': 'शुरुआत करें',
+    'section.authoring': 'लेखन',
+    'section.theming': 'थीमिंग',
+    'section.internationalization': 'अंतर्राष्ट्रीयकरण',
+    'section.api-reference': 'API संदर्भ',
+    'section.deployment': 'तैनाती',
+  },
+};
+
+export type TranslationKey = keyof typeof translations['en'];
+
+// Callable interface — supports t('key'), t.all(), t.exists(), t.dir()
+export interface TFunction {
+  (key: TranslationKey): string;
+  all(): Record<TranslationKey, string>;
+  exists(key: TranslationKey): boolean;
+  dir(): 'ltr' | 'rtl';
+}
+
+export function useTranslations(locale: Locale): TFunction {
+  const dict = translations[locale] ?? translations[DEFAULT_LOCALE];
+  const fallback = translations[DEFAULT_LOCALE];
+
+  const fn = (key: TranslationKey): string => dict[key] ?? fallback[key];
+
+  const t = Object.assign(fn, {
+    all(): Record<TranslationKey, string> {
+      const result = { ...fallback } as Record<TranslationKey, string>;
+      for (const [k, v] of Object.entries(dict)) {
+        (result as Record<string, string>)[k] = v;
+      }
+      return result;
+    },
+    exists(key: TranslationKey): boolean {
+      return key in dict;
+    },
+    dir(): 'ltr' | 'rtl' {
+      return (RTL_LOCALES as Locale[]).includes(locale) ? 'rtl' : 'ltr';
+    },
+  }) as TFunction;
+
+  return t;
+}
+
+export function normalizeLocale(input?: string): Locale {
+  if (input && isValidLocale(input)) return input;
+  return DEFAULT_LOCALE;
+}

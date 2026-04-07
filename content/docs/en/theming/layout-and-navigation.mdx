@@ -1,0 +1,80 @@
+---
+title: "Layout & navigation"
+description: "Understand the three-column grid layout, responsive breakpoints, and how sidebar navigation is built from your content."
+section: "Theming"
+order: 23
+lastUpdated: "2026-04-04"
+---
+
+Scrollup uses a three-column layout for documentation pages and a single-column layout for the landing page. Both are fully responsive.
+
+## Three-column grid
+
+The docs layout (`src/layouts/DocsLayout.astro`) renders a grid with three columns:
+
+| Column | Width | Content |
+|---|---|---|
+| Sidebar | `240px` fixed | Section navigation |
+| Content | `860px` max | Article body |
+| Table of contents | `180px` fixed | Heading links |
+
+The overall shell is capped at `1440px` (`--shell-max` in `tokens.css`), centered on the page.
+
+```css title="Layout variables in tokens.css"
+:root {
+  --content-w: 860px;
+  --sidebar-w: 240px;
+  --toc-w: 180px;
+  --shell-max: 1440px;
+}
+```
+
+## Responsive breakpoints
+
+The layout collapses at two breakpoints:
+
+**Below 1280px** — the table of contents column hides. The content area stretches to fill the freed space.
+
+**Below 768px** — the sidebar also hides. The content area takes the full viewport width with reduced padding.
+
+<Callout type="note">
+  On mobile, there is currently no hamburger menu to access the sidebar. Users navigate via the landing page portal cards, search, or prev/next links at the bottom of each page.
+</Callout>
+
+## Sidebar navigation
+
+The sidebar is built automatically from your content files. Each page's `section` frontmatter field determines which group it appears in. Within each group, pages are sorted by their `order` field.
+
+### Section ordering
+
+Section display order is controlled by `SECTION_ORDER` in `src/lib/navigation.ts`:
+
+```ts title="src/lib/navigation.ts"
+const SECTION_ORDER: Record<string, number> = {
+  'Getting started': 0,
+  'Authoring': 1,
+  'Theming': 2,
+  'API reference': 3,
+  'Deployment': 4,
+};
+```
+
+### Adding a new section
+
+1. Create a folder under `content/docs/` (e.g., `content/docs/integrations/`)
+2. Add your section to `SECTION_ORDER` with the desired position number
+3. Create `.mdx` files with `section: "Integrations"` in their frontmatter
+
+The new section appears in the sidebar automatically.
+
+## Landing page layout
+
+The landing page (`src/pages/index.astro`) uses a single-column layout with:
+
+- A hero banner with gradient background and dot-grid overlay
+- A portal card grid (3 columns, collapsing to 2 at 1024px and 1 at 768px)
+- A three-column footer with documentation links, resources, and community links
+
+## Prev/next navigation
+
+At the bottom of every documentation page, prev/next links connect pages in order. The order follows the global sort: first by section (using `SECTION_ORDER`), then by `order` within each section. This means the "next" link from the last page of one section leads to the first page of the next section.

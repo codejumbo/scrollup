@@ -1,0 +1,167 @@
+---
+title: "Troubleshooting"
+description: "Solutions to common issues you might encounter when setting up, building, or deploying a Scrollup documentation site."
+section: "Getting started"
+order: 5
+lastUpdated: "2026-04-04"
+---
+
+Running into a problem? This page covers the most common issues and how to fix them.
+
+## Build and dev server
+
+### `Cannot find module` or missing dependency errors
+
+Your `node_modules` may be out of date or corrupted.
+
+```sh title="Terminal"
+rm -rf node_modules package-lock.json
+npm install
+```
+
+<Callout type="note">
+  Scrollup requires **Node.js 20 or later**. Check your version with `node --version`.
+</Callout>
+
+### Build fails with content collection errors
+
+This usually means a frontmatter field is missing or has the wrong type. Every `.mdx` file needs these four fields:
+
+```yaml title="Required frontmatter"
+title: "Page title"
+description: "A short summary"
+section: "Getting started"
+order: 1
+```
+
+Run `npx astro check` to see detailed validation errors with file paths and line numbers.
+
+### Port 4321 is already in use
+
+Another process is using the default Astro port. Either stop that process or run the dev server on a different port:
+
+```sh title="Terminal"
+npm run dev -- --port 4322
+```
+
+### Changes not appearing in the browser
+
+Astro's hot reload handles most file types, but some changes require a full restart:
+
+- Edits to `astro.config.ts`
+- Changes to `src/content.config.ts` (the schema)
+- Adding or removing content collection folders
+
+Stop the dev server with `Ctrl+C` and run `npm run dev` again.
+
+---
+
+## Content and navigation
+
+### New page doesn't appear in the sidebar
+
+Check these three things:
+
+1. **Frontmatter has all required fields** — `title`, `description`, `section`, and `order` must all be present
+2. **`section` matches an existing section** — the value must exactly match a key in `SECTION_ORDER` in `src/lib/navigation.ts` (case-sensitive)
+3. **`draft: true` is not set** — draft pages are excluded from navigation and the build
+
+### Page appears in the wrong position
+
+The `order` field controls position within a section. Lower numbers appear first. If two pages share the same `order` value, their position is unpredictable — use unique values.
+
+### New section doesn't appear
+
+After creating `.mdx` files with a new `section` value, add it to `SECTION_ORDER` in `src/lib/navigation.ts`:
+
+```ts title="src/lib/navigation.ts"
+const SECTION_ORDER: Record<string, number> = {
+  'Getting started': 0,
+  'Authoring': 1,
+  'Theming': 2,
+  'API reference': 3,
+  'Deployment': 4,
+  'My new section': 5, // add your section here
+};
+```
+
+---
+
+## Theming and styles
+
+### Dark mode doesn't persist across page loads
+
+Scrollup stores the theme preference in `localStorage` under `theme-preference`. If you're testing in a private/incognito window, storage may be cleared on close — this is expected browser behavior, not a bug.
+
+If the theme flashes on page load, make sure `ThemeInit.astro` is included in the `<head>` of your layout. It runs synchronously before first paint to prevent flicker.
+
+### Custom CSS not loading
+
+If you've set `customCss` in `src/lib/config.ts`, verify:
+
+1. Each path starts with `/` (e.g., `'/custom.css'`)
+2. The files exist in the `public/` directory
+3. File names match exactly (paths are case-sensitive on most hosts)
+
+### Fonts not loading or falling back to system fonts
+
+Self-hosted fonts must be in `public/fonts/` as WOFF2 files. Check that:
+
+- The font files exist at the paths referenced in `src/styles/typography.css`
+- The `@font-face` declarations have the correct `src` URLs
+- The `font-family` names in `@font-face` match the CSS variable values in `tokens.css`
+
+---
+
+## Search
+
+### Search returns no results
+
+The search index is generated at build time. If you've added new pages during development, the index updates automatically on the next dev server restart. For production, rebuild with `npm run build`.
+
+### Search dialog doesn't open
+
+The search dialog is triggered by `Cmd+K` (Mac) or `Ctrl+K` (Windows/Linux), or by clicking the search bar. If neither works, check the browser console for JavaScript errors — a syntax error in any inline script can prevent event listeners from registering.
+
+---
+
+## Deployment
+
+### Blank page after deploying
+
+The most common cause is a wrong `site` value in `astro.config.ts`. This field is used to generate absolute URLs for sitemaps, RSS, and canonical links. It should match your production URL exactly:
+
+```ts title="astro.config.ts"
+export default defineConfig({
+  site: 'https://your-domain.com',
+  // ...
+});
+```
+
+### 404 errors on page refresh
+
+If you're deploying behind a single-page app router (some hosting configurations), the server may not know how to handle direct requests to `/authoring/code-blocks`. Scrollup generates static HTML, so each route needs its own file.
+
+Make sure your hosting is configured for **static site** mode, not SPA mode. On Netlify, avoid adding `/* /index.html 200` to `_redirects`. On Cloudflare Pages, the default configuration works correctly.
+
+### Images or assets not loading after deploy
+
+Verify that paths in your MDX files use absolute paths starting with `/`:
+
+```mdx
+<!-- Correct -->
+![Screenshot](/images/screenshot.png)
+
+<!-- Incorrect — won't work in production -->
+![Screenshot](images/screenshot.png)
+```
+
+---
+
+## Still stuck?
+
+If your issue isn't covered here:
+
+- **Search the docs** — press `Cmd+K` and describe the problem
+- **Check GitHub Issues** — someone may have reported the same problem: [github.com/codejumbo/scrollup/issues](https://github.com/codejumbo/scrollup/issues)
+- **Open a new issue** — include the error message, your Node.js version, and the steps to reproduce

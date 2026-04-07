@@ -1,0 +1,26 @@
+node_modules/
+dist/
+.astro/
+.DS_Store
+*.log
+.env
+.env.*
+.vscode/
+.idea/
+*.tsbuildinfo
+.claude/
+CLAUDE.md
+my-local-stuff/
+
+# Terraform — only ignore binary cache, NOT .terraform.lock.hcl (commit that)
+infrastructure/terraform/.terraform/
+infrastructure/terraform/terraform.tfvars
+infrastructure/terraform/terraform.tfstate
+infrastructure/terraform/terraform.tfstate.backup
+infrastructure/terraform/tfplan
+
+# Kamal
+.kamal/secrets
+
+# Local IDE / MCP config
+.mcp.json

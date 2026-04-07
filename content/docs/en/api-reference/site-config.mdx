@@ -1,0 +1,128 @@
+---
+title: "Site config"
+description: "Reference for all fields in siteConfig — the central place to set your site name, URL, repo, social links, and more."
+section: "API reference"
+order: 32
+lastUpdated: "2026-04-05"
+---
+
+`siteConfig` lives in `src/lib/config.ts` and is the single place to configure your documentation site's identity and metadata. It is imported by layouts, the footer, SEO head, and the Topbar.
+
+```ts title="src/lib/config.ts"
+export const siteConfig = {
+  siteName: 'My Docs',
+  siteUrl: 'https://docs.example.com',
+  description: 'Documentation for My Product.',
+  repoUrl: 'https://github.com/your-org/your-repo',
+  editBranch: 'main',
+  favicon: '/favicon.svg',
+  customCss: [],
+  copyright: 'Copyright © 2026 Your Company.',
+  socialLinks: [
+    { platform: 'github', url: 'https://github.com/your-org/your-repo' },
+  ],
+} as const;
+```
+
+---
+
+## Fields
+
+<ParamField name="siteName" type="string" required>
+  The display name of your documentation site. Appears in the Topbar, browser tab title, and Open Graph meta tags.
+</ParamField>
+
+<ParamField name="siteUrl" type="string" required>
+  The full canonical URL where your docs are deployed (no trailing slash). Used for generating sitemap entries, canonical link tags, and Open Graph URLs.
+
+  ```ts
+  siteUrl: 'https://docs.example.com'
+  ```
+</ParamField>
+
+<ParamField name="description" type="string" required>
+  A one-line description of your site. Used in the HTML `<meta name="description">` tag and Open Graph descriptions. Keep it under 160 characters.
+</ParamField>
+
+<ParamField name="repoUrl" type="string" required>
+  The full URL of your source code repository. Used to generate "Edit this page on GitHub" links and to populate the GitHub social link if you include one in `socialLinks`.
+
+  ```ts
+  repoUrl: 'https://github.com/your-org/your-repo'
+  ```
+</ParamField>
+
+<ParamField name="editBranch" type="string">
+  The branch name used to construct "Edit this page" links. Defaults to `'main'`. Change this if your default branch is named differently.
+
+  ```ts
+  editBranch: 'main'   // links point to github.com/.../blob/main/...
+  editBranch: 'trunk'  // links point to github.com/.../blob/trunk/...
+  ```
+</ParamField>
+
+<ParamField name="favicon" type="string">
+  Path to the favicon file, relative to the `public/` directory. Defaults to `'/favicon.svg'`. SVG favicons work in all modern browsers and scale cleanly.
+</ParamField>
+
+<ParamField name="customCss" type="string[]">
+  An array of custom stylesheet paths (relative to `public/`) loaded on every page after the built-in styles. Supports multiple files — useful for layering brand CSS on top of a theme override.
+
+  ```ts
+  customCss: ['/custom.css', '/brand.css']
+  ```
+
+  Leave as `[]` to load no custom stylesheets. See [Custom CSS](/en/theming/custom-css) for more on what to put in these files.
+</ParamField>
+
+<ParamField name="copyright" type="string | false">
+  Copyright notice displayed in the footer. Pass a string to show it, or `false` to hide the copyright line entirely.
+
+  ```ts
+  copyright: 'Copyright © 2026 Acme Corp.'  // shows in footer
+  copyright: false                            // hides the line
+  ```
+</ParamField>
+
+<ParamField name="socialLinks" type="SocialLink[]">
+  An array of social links shown as icon buttons in the footer and Topbar. Each entry is a `{ platform, url }` object.
+
+  Supported platforms: `'github'`, `'gitlab'`, `'discord'`, `'x'`
+
+  ```ts
+  socialLinks: [
+    { platform: 'github',  url: 'https://github.com/your-org/your-repo' },
+    { platform: 'discord', url: 'https://discord.gg/your-invite' },
+    { platform: 'x',       url: 'https://x.com/yourhandle' },
+  ]
+  ```
+
+  Pass an empty array (`[]`) to show no social icons.
+</ParamField>
+
+---
+
+## Example: complete configuration
+
+```ts title="src/lib/config.ts"
+import type { SocialLink } from './config';
+
+export const siteConfig = {
+  siteName: 'Acme Docs',
+  siteUrl: 'https://docs.acme.com',
+  description: 'Developer documentation for the Acme platform.',
+  repoUrl: 'https://github.com/acme/docs',
+  editBranch: 'main',
+  favicon: '/favicon.svg',
+  customCss: ['/brand.css'],
+  copyright: 'Copyright © 2026 Acme Corp. All rights reserved.',
+  socialLinks: [
+    { platform: 'github',  url: 'https://github.com/acme/docs' },
+    { platform: 'discord', url: 'https://discord.gg/acme' },
+  ] satisfies SocialLink[],
+} as const;
+```
+
+<Callout type="tip">
+  After editing `siteConfig`, restart the dev server (`npm run dev`) to see changes in the Topbar and footer. Most fields are read at build time, so a cold restart ensures all pages pick up the new values.
+</Callout>

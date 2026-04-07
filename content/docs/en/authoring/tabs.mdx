@@ -1,0 +1,104 @@
+---
+title: "Tabs"
+description: "Organize alternative content — like package manager commands or platform-specific instructions — into clean tabbed panels."
+section: "Authoring"
+order: 13
+lastUpdated: "2026-04-05"
+---
+
+Tabs let you present multiple variations of the same content without cluttering the page. The most common use case is showing commands for different package managers or code in different languages.
+
+## Usage
+
+Wrap `Tab` components inside a `Tabs` container. The `labels` prop defines the tab titles, and each `Tab` gets an `index` matching its position.
+
+```mdx title="example.mdx"
+import Tabs from '@/components/mdx/Tabs.astro';
+import Tab from '@/components/mdx/Tab.astro';
+
+<Tabs labels={["npm", "pnpm", "yarn"]}>
+  <Tab index={0}>
+    npm install my-library
+  </Tab>
+  <Tab index={1}>
+    pnpm add my-library
+  </Tab>
+  <Tab index={2}>
+    yarn add my-library
+  </Tab>
+</Tabs>
+```
+
+## Example
+
+<Tabs labels={["npm", "pnpm", "yarn"]}>
+  <Tab index={0}>
+    ```sh title="Terminal"
+    npm install my-library
+    ```
+  </Tab>
+  <Tab index={1}>
+    ```sh title="Terminal"
+    pnpm add my-library
+    ```
+  </Tab>
+  <Tab index={2}>
+    ```sh title="Terminal"
+    yarn add my-library
+    ```
+  </Tab>
+</Tabs>
+
+## With mixed content
+
+Tabs aren't limited to code blocks. You can put any content inside a tab panel:
+
+<Tabs labels={["macOS", "Linux", "Windows"]}>
+  <Tab index={0}>
+    On macOS, install via Homebrew:
+
+    ```sh title="Terminal"
+    brew install node
+    ```
+  </Tab>
+  <Tab index={1}>
+    On Ubuntu/Debian, use the NodeSource repository:
+
+    ```sh title="Terminal"
+    curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+    sudo apt-get install -y nodejs
+    ```
+  </Tab>
+  <Tab index={2}>
+    On Windows, download the installer from the Node.js website or use Chocolatey:
+
+    ```sh title="Terminal"
+    choco install nodejs-lts
+    ```
+  </Tab>
+</Tabs>
+
+<Callout type="note">
+  Tab switching is instant — there is no fade or slide animation. This gives tabs the physical, responsive feel of a real switch rather than a slow page transition.
+</Callout>
+
+## Synchronized tabs
+
+Add a `syncKey` prop to keep multiple `<Tabs>` groups in sync. When a reader clicks a tab in one group, all groups sharing the same `syncKey` switch to the same index. The active index is persisted to `localStorage`, so it's also restored on the next visit.
+
+```mdx
+<Tabs labels={["npm", "pnpm", "yarn"]} syncKey="pkg-manager">
+  <Tab index={0}>npm install</Tab>
+  <Tab index={1}>pnpm add</Tab>
+  <Tab index={2}>yarn add</Tab>
+</Tabs>
+
+{/* Further down the page — stays in sync */}
+<Tabs labels={["npm", "pnpm", "yarn"]} syncKey="pkg-manager">
+  <Tab index={0}>npm run build</Tab>
+  <Tab index={1}>pnpm build</Tab>
+  <Tab index={2}>yarn build</Tab>
+</Tabs>
+```
+
+`syncKey` is a plain string — use any value as long as it's consistent across the groups you want linked. Groups with different `syncKey` values don't affect each other.

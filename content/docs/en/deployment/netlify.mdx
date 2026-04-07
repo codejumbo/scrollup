@@ -1,0 +1,59 @@
+---
+title: "Netlify"
+description: "Deploy your Scrollup site to Netlify with continuous deployment and instant rollbacks."
+section: "Deployment"
+order: 43
+lastUpdated: "2026-04-04"
+---
+
+Netlify offers free static hosting with continuous deployment from Git, instant rollbacks, and preview deploys for pull requests.
+
+## Setup
+
+<Steps>
+  <Step num={1} title="Push to GitHub or GitLab">
+    Ensure your Scrollup project is in a Git repository hosted on GitHub, GitLab, or Bitbucket.
+  </Step>
+  <Step num={2} title="Connect in Netlify">
+    Go to [app.netlify.com](https://app.netlify.com), click **Add new site > Import an existing project**, and select your repository.
+  </Step>
+  <Step num={3} title="Configure build settings">
+    Netlify auto-detects Astro. Verify the settings:
+
+    - **Build command:** `npm run build`
+    - **Publish directory:** `dist`
+  </Step>
+  <Step num={4} title="Deploy">
+    Click **Deploy site**. Netlify builds and publishes your documentation. Every push to your main branch triggers a new deployment.
+  </Step>
+</Steps>
+
+## Configuration file
+
+For more control, add a `netlify.toml` to your project root:
+
+```toml title="netlify.toml"
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  conditions = {Role = ["admin"]}
+```
+
+## Custom domain
+
+1. Go to **Site settings > Domain management**
+2. Click **Add custom domain**
+3. Follow the DNS configuration instructions to point your domain to Netlify
+
+## Environment variables
+
+Set environment variables in **Site settings > Environment variables**. These are available during the build process.
+
+<Callout type="tip" title="Preview deploys">
+  Netlify automatically creates preview deployments for every pull request. Share the preview URL with reviewers before merging.
+</Callout>

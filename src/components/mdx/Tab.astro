@@ -1,0 +1,25 @@
+---
+interface Props {
+  index: number;
+}
+
+const { index } = Astro.props;
+---
+
+<div class:list={['tab-content', { on: index === 0 }]} data-tab-index={index}>
+  <slot />
+</div>
+
+<style>
+  .tab-content { display: none; }
+  .tab-content.on { display: block; }
+
+  /* Code blocks inside tabs lose top border-radius */
+  .tab-content :global(.expressive-code) {
+    margin-top: 0;
+  }
+  .tab-content :global(.expressive-code pre) {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+</style>

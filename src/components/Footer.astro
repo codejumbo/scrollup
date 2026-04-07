@@ -1,0 +1,166 @@
+---
+import { siteConfig, getSiteName } from '@/lib/config';
+---
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-logo">
+        <svg class="footer-mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="currentColor">
+          <rect x="4" y="4" width="4" height="24" rx="2"/>
+          <rect x="11" y="4" width="17" height="5" rx="2"/>
+          <rect x="11" y="13.5" width="12" height="5" rx="2"/>
+          <rect x="11" y="23" width="7" height="5" rx="2"/>
+        </svg>
+        {getSiteName('en')}
+      </div>
+      <p>{siteConfig.description}</p>
+    </div>
+    <div class="footer-links">
+      <div class="footer-col">
+        <h3>Documentation</h3>
+        <a href="/en/getting-started/introduction">Introduction</a>
+        <a href="/en/getting-started/installation">Installation</a>
+        <a href="/en/getting-started/configuration">Configuration</a>
+      </div>
+      <div class="footer-col">
+        <h3>Resources</h3>
+        <a href="/en/authoring/markdown-and-mdx">Authoring guide</a>
+        <a href="/en/theming/colors-and-typography">Theming</a>
+        <a href="/en/api-reference/cli">CLI reference</a>
+      </div>
+      <div class="footer-col">
+        <h3>Community</h3>
+        <a href={siteConfig.repoUrl} target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href={`${siteConfig.repoUrl}/discussions`} target="_blank" rel="noopener noreferrer">Discussions</a>
+        <a href={`${siteConfig.repoUrl}/issues`} target="_blank" rel="noopener noreferrer">Report an issue</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    {siteConfig.copyright !== false && <span>{siteConfig.copyright}</span>}
+    <span>Built with <a href="https://scrollup.io" target="_blank" rel="noopener noreferrer">ScrollUp</a>.</span>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--border-subtle);
+    margin-top: 40px;
+  }
+
+  .footer-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 56px 32px 40px;
+    display: flex;
+    justify-content: space-between;
+    gap: 64px;
+  }
+
+  .footer-brand {
+    max-width: 260px;
+  }
+
+  .footer-logo {
+    font-family: var(--sans);
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--text-1);
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-bottom: 10px;
+  }
+
+  .footer-mark {
+    width: 20px;
+    height: 20px;
+  }
+
+  .footer-brand p {
+    font-family: var(--serif);
+    font-size: 14px;
+    color: var(--text-3);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 56px;
+  }
+
+  .footer-col {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .footer-col h3 {
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: 4px;
+  }
+
+  .footer-col a {
+    font-family: var(--sans);
+    font-size: 13.5px;
+    color: var(--text-2);
+    text-decoration: none;
+    transition: color 0.12s;
+  }
+  .footer-col a:hover {
+    color: var(--accent);
+  }
+
+  .footer-bottom {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 20px 32px;
+    border-top: 1px solid var(--border-subtle);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .footer-bottom span,
+  .footer-bottom a {
+    font-family: var(--sans);
+    font-size: 12.5px;
+    color: var(--text-3);
+  }
+
+  .footer-bottom a {
+    text-decoration: none;
+  }
+
+  .footer-bottom a:hover {
+    color: var(--accent);
+  }
+
+  @media (max-width: 768px) {
+    .footer-inner {
+      flex-direction: column;
+      gap: 40px;
+      padding: 40px 24px 32px;
+    }
+
+    .footer-links {
+      flex-wrap: wrap;
+      gap: 32px;
+    }
+
+    .footer-bottom {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+      padding: 16px 24px;
+    }
+  }
+</style>

@@ -1,0 +1,144 @@
+---
+title: "Cards"
+description: "Display content in titled card boxes, arranged in flexible grids with Card and CardGrid."
+section: "Authoring"
+order: 19
+lastUpdated: "2026-04-05"
+---
+
+The `<Card>` and `<CardGrid>` components let you present content in titled, bordered boxes arranged in a grid. Unlike [LinkGrid](/en/authoring/link-grids), cards don't require a link — they accept any slot content.
+
+---
+
+## Card
+
+A single card with a required `title` and an optional `icon`.
+
+**Props:**
+
+- `title` (required string) — displayed in the card header
+- `icon` (optional string) — an emoji or single character shown before the title
+
+```text
+<Card title="Static output" icon="⚡">
+  Scrollup generates plain HTML files at build time. No server required — deploy
+  to any CDN or static host.
+</Card>
+```
+
+<Card title="Static output" icon="⚡">
+  Scrollup generates plain HTML files at build time. No server required — deploy
+  to any CDN or static host.
+</Card>
+
+Cards accept rich slot content — lists, code, and inline formatting all work:
+
+```text
+<Card title="Supported locales" icon="🌍">
+  Six locales ship by default:
+
+  - `en` — English
+  - `fr` — French
+  - `es` — Spanish
+  - `de` — German
+  - `ja` — Japanese
+  - `hi` — Hindi
+</Card>
+```
+<br/>
+<Card title="Supported locales" icon="🌍">
+  Six locales ship by default:
+
+  - `en` — English
+  - `fr` — French
+  - `es` — Spanish
+  - `de` — German
+  - `ja` — Japanese
+  - `hi` — Hindi
+</Card>
+
+---
+
+## CardGrid
+
+Wraps multiple `<Card>` components in a responsive grid.
+
+**Props:**
+
+- `cols` — optional `1 | 2 | 3`, default `2`
+
+```text
+<CardGrid>
+  <Card title="MDX" icon="📝">
+    Write content in Markdown with full JSX component support.
+  </Card>
+  <Card title="Search" icon="🔍">
+    Client-side full-text search powered by Orama. No server needed.
+  </Card>
+  <Card title="i18n" icon="🌐">
+    Six locales included. Add more by creating locale folders in `content/docs/`.
+  </Card>
+  <Card title="Theming" icon="🎨">
+    All colors are CSS custom properties. Swap the entire palette in one file.
+  </Card>
+</CardGrid>
+```
+
+<CardGrid>
+  <Card title="MDX" icon="📝">
+    Write content in Markdown with full JSX component support.
+  </Card>
+  <Card title="Search" icon="🔍">
+    Client-side full-text search powered by Orama. No server needed.
+  </Card>
+  <Card title="i18n" icon="🌐">
+    Six locales included. Add more by creating locale folders in
+    `content/docs/`.
+  </Card>
+  <Card title="Theming" icon="🎨">
+    All colors are CSS custom properties. Swap the entire palette in one file.
+  </Card>
+</CardGrid>
+
+### Three-column layout
+
+```text
+<CardGrid cols={3}>
+  <Card title="Fast">Zero runtime JS by default.</Card>
+  <Card title="Typed">Full TypeScript support.</Card>
+  <Card title="Flexible">Drop in any Astro integration.</Card>
+</CardGrid>
+```
+
+<CardGrid cols={3}>
+  <Card title="Fast">Zero runtime JS by default.</Card>
+  <Card title="Typed">Full TypeScript support.</Card>
+  <Card title="Flexible">Drop in any Astro integration.</Card>
+</CardGrid>
+
+### Single column
+
+```text
+<CardGrid cols={1}>
+  <Card title="Step 1 — Install">Run `npm create scrollup@latest my-docs` to scaffold a new site.</Card>
+  <Card title="Step 2 — Configure">Edit `astro.config.ts` and set your site URL.</Card>
+  <Card title="Step 3 — Write">Add MDX files to `content/docs/en/` and start writing.</Card>
+</CardGrid>
+```
+
+<CardGrid cols={1}>
+  <Card title="Step 1 — Install">
+    Run `npm create scrollup@latest my-docs` to scaffold a new site.
+  </Card>
+  <Card title="Step 2 — Configure">
+    Edit `astro.config.ts` and set your site URL.
+  </Card>
+  <Card title="Step 3 — Write">
+    Add MDX files to `content/docs/en/` and start writing.
+  </Card>
+</CardGrid>
+
+<Callout type="tip">
+  On narrow viewports, CardGrid collapses to a single column regardless of the
+  `cols` value.
+</Callout>

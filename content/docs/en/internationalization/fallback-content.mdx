@@ -1,0 +1,43 @@
+---
+title: "Fallback content"
+description: "How Scrollup handles pages that haven't been translated yet — automatic fallback to English with a visible notice."
+section: "Internationalization"
+order: 25
+lastUpdated: "2026-04-06"
+---
+
+import { Callout } from '@/components/mdx';
+
+When a visitor navigates to a locale that doesn't have a translation for a given page, Scrollup automatically renders the English version and shows a notice at the top of the page.
+
+## How fallback works
+
+At build time, Scrollup generates routes for every locale × every English page. If a translated version exists, it's used. If not, Astro serves the English content at the locale-prefixed URL (e.g. `/fr/authoring/code-blocks`) and injects a `<FallbackNotice>` banner above the content.
+
+The notice says:
+
+> *This page hasn't been translated yet. You're viewing the English version.*
+
+It links to the English URL so readers can bookmark the canonical source.
+
+## What the sidebar shows on fallback pages
+
+For fallback pages, the sidebar is still fully populated — it uses English entries with locale-prefixed slugs so navigation works even for sparsely-translated locales. Every page is reachable even before the translation exists.
+
+## How the language switcher behaves
+
+The language switcher only shows locales that have a **real** translation of the current page. It does not offer locales that would show a fallback, preventing users from accidentally switching to a page they can't read.
+
+<Callout type="tip">
+To add a real translation and stop the fallback from showing, create the file at `content/docs/{locale}/{section}/{slug}.mdx` with the same frontmatter fields as the English version.
+</Callout>
+
+## Opting out of fallback for a page
+
+There is no frontmatter flag to disable fallback. If you don't want a page to appear at a given locale URL at all, the correct approach is to use `sidebar.hidden: true` on the English page — this suppresses it from the sidebar but the fallback route still exists. For a true no-show, the page itself would need to be excluded from navigation, which is a use case not yet supported.
+
+## How it's implemented
+
+- `src/pages/[...slug].astro` — `getStaticPaths` generates the fallback routes; each gets `isFallback: true` and `fallbackEnglishSlug` in props
+- `src/components/FallbackNotice.astro` — the notice banner rendered above content on fallback pages
+- `src/layouts/DocsLayout.astro` — accepts `isFallback` and `fallbackEnglishSlug` props; renders `<FallbackNotice>` when needed

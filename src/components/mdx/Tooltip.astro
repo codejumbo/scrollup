@@ -1,0 +1,46 @@
+---
+interface Props {
+  text: string;
+}
+
+const { text } = Astro.props;
+---
+
+<span class="tooltip-wrapper" aria-describedby="tooltip" data-tooltip={text}>
+  <slot />
+</span>
+
+<style>
+  .tooltip-wrapper {
+    position: relative;
+    display: inline;
+    border-bottom: 1px dashed var(--text-3);
+    cursor: help;
+  }
+
+  .tooltip-wrapper::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--text-1);
+    color: var(--bg);
+    font-family: var(--sans);
+    font-size: 12.5px;
+    font-weight: 500;
+    line-height: 1.4;
+    padding: 6px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+    z-index: 10;
+  }
+
+  .tooltip-wrapper:hover::after,
+  .tooltip-wrapper:focus::after {
+    opacity: 1;
+  }
+</style>

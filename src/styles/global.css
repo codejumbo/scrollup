@@ -1,0 +1,36 @@
+/* Declare layer order — Scrollup base styles are in @layer scrollup, so any
+   unlayered user CSS (customCss[]) automatically overrides at higher specificity.
+   Note: Expressive Code injects its own styles outside this layer. */
+@layer scrollup;
+
+@import './reset.css';
+@import './tokens.css';
+@import './typography.css';
+
+/* Unlayered — overrides Expressive Code's injected styles */
+.article figure {
+  margin-block: 1.5rem;
+}
+
+@layer scrollup {
+  ::selection {
+    background: var(--accent-subtle);
+    color: var(--text-1);
+  }
+
+  /* Scrollbar styling for code blocks and sidebars */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--text-3);
+  }
+}
