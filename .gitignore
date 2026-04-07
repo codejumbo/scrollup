@@ -21,3 +21,6 @@ infrastructure/terraform/tfplan
 
 # Kamal
 .kamal/secrets
+
+# Local IDE / MCP config
+.mcp.json
