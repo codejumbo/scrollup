@@ -7,6 +7,92 @@ on:
     branches: [main]
 
 jobs:
+  secret-scan:
+    name: Secret Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          fetch-depth: 0  # full history so gitleaks can scan all commits in the PR
+
+      - name: Install Gitleaks
+        run: |
+          GITLEAKS_VERSION="8.24.3"
+          curl -sSfL "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" \
+            -o gitleaks.tar.gz
+          tar -xzf gitleaks.tar.gz gitleaks
+          chmod +x gitleaks
+
+      - name: Scan for secrets and credentials
+        run: |
+          ./gitleaks detect \
+            --source . \
+            --log-level warn \
+            --redact \
+            --exit-code 1
+
+  commit-lint:
+    name: Commit Message Standards
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - name: Validate commit messages
+        run: |
+          BASE=${{ github.event.pull_request.base.sha }}
+          HEAD=${{ github.event.pull_request.head.sha }}
+
+          # Conventional Commits: type(scope): description
+          # - type must be one of the allowed values
+          # - description must start with a lowercase letter
+          # - subject line must be ≤ 72 characters
+          # - no trailing period
+          # - no WIP commits
+          PATTERN='^(feat|fix|docs|style|refactor|perf|test|chore|ci|build|revert)(\([a-z0-9 ,_/-]+\))?: [a-z].{0,70}[^.]$'
+
+          FAILED=0
+          while IFS= read -r commit_hash; do
+            subject=$(git log --format=%s -n 1 "$commit_hash")
+
+            # Block WIP commits
+            if echo "$subject" | grep -qiE '^wip\b'; then
+              echo "::error::WIP commit not allowed: \"$subject\""
+              FAILED=1
+              continue
+            fi
+
+            # Block fixup!/squash! commits
+            if echo "$subject" | grep -qiE '^(fixup|squash)!'; then
+              echo "::error::Fixup/squash commit not allowed in final PR: \"$subject\""
+              FAILED=1
+              continue
+            fi
+
+            if ! echo "$subject" | grep -qE "$PATTERN"; then
+              echo "::error::Bad commit message: \"$subject\""
+              FAILED=1
+            fi
+          done < <(git log --format=%H "$BASE..$HEAD")
+
+          if [ "$FAILED" -eq 1 ]; then
+            echo ""
+            echo "Commit messages must follow Conventional Commits:"
+            echo "  type(scope): description"
+            echo ""
+            echo "Allowed types: feat fix docs style refactor perf test chore ci build revert"
+            echo "Rules:"
+            echo "  - description starts with a lowercase letter"
+            echo "  - subject line is 72 characters or fewer"
+            echo "  - no trailing period"
+            echo "  - no WIP or fixup!/squash! commits"
+            exit 1
+          fi
+
+          echo "All commit messages are valid."
+
   validate:
     name: Validate
     runs-on: ubuntu-latest
