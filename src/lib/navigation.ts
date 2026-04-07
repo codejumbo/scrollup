@@ -48,8 +48,8 @@ export function buildSidebar(entries: NavItem[]): NavSection[] {
     sections.push({ label, items });
   }
 
-  // Sort sections by the minimum order of their first item
-  sections.sort((a, b) => a.items[0].order - b.items[0].order);
+  // Sort sections by their defined section order
+  sections.sort((a, b) => getSectionOrder(a.label) - getSectionOrder(b.label));
 
   return sections;
 }

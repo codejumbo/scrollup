@@ -42,6 +42,7 @@
     return EXT_MAP[ext] ?? 'file';
   }
 
+  function initFileTrees() {
   document.querySelectorAll('.file-tree').forEach((tree) => {
     tree.querySelectorAll('li').forEach((li) => {
       // Get the first meaningful text (the filename)
@@ -92,6 +93,9 @@
       }
     });
   });
+  }
+
+  document.addEventListener('astro:page-load', initFileTrees);
 </script>
 
 <style>

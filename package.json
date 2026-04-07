@@ -31,7 +31,10 @@
     "check-links": "npx tsx scripts/check-links.ts",
     "validate": "npx astro check && npm run check-links",
     "new-page": "node scripts/new-page.mjs",
+    "check-content": "npx tsx scripts/check-content.ts",
     "check-freshness": "npx tsx scripts/check-freshness.ts",
+    "pre-commit": "bash scripts/pre-commit.sh",
+    "pre-commit:fast": "bash scripts/pre-commit.sh --skip-build",
     "generate-skill": "npx tsx scripts/generate-skill.ts"
   },
   "dependencies": {

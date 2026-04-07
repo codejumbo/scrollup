@@ -40,14 +40,14 @@ Your replacement component must accept the **same props** as the original. If pr
 ## Example: custom Footer
 
 <Steps>
-  <Step>
-    Create your replacement component. Copy the original as a starting point:
+  <Step num={1} title="Create your replacement component">
+    Copy the original as a starting point:
 
     ```bash
     cp src/components/Footer.astro src/components/MyFooter.astro
     ```
   </Step>
-  <Step>
+  <Step num={2} title="Update overrides.ts">
     Edit `src/lib/overrides.ts` to point at your version:
 
     ```ts
@@ -57,7 +57,7 @@ Your replacement component must accept the **same props** as the original. If pr
     export { default as Footer } from '../components/MyFooter.astro';
     ```
   </Step>
-  <Step>
+  <Step num={3} title="Start the dev server">
     Run `npm run dev` — your footer is now used everywhere.
   </Step>
 </Steps>
