@@ -8,12 +8,12 @@ lastUpdated: "2026-04-04"
 
 ## Quick start
 
-Clone the template with `degit`, install dependencies, and start the dev server.
+Scaffold a new site with `create-scrollup`, install dependencies, and start the dev server.
 
 <Tabs labels={["npm", "pnpm", "yarn", "bun"]}>
   <Tab index={0}>
     ```sh title="Terminal"
-    npx degit codejumbo/scrollup my-docs
+    npm create scrollup@latest my-docs
     cd my-docs
     npm install
     npm run dev
@@ -21,7 +21,7 @@ Clone the template with `degit`, install dependencies, and start the dev server.
   </Tab>
   <Tab index={1}>
     ```sh title="Terminal"
-    pnpm dlx degit codejumbo/scrollup my-docs
+    pnpm create scrollup@latest my-docs
     cd my-docs
     pnpm install
     pnpm run dev
@@ -29,7 +29,7 @@ Clone the template with `degit`, install dependencies, and start the dev server.
   </Tab>
   <Tab index={2}>
     ```sh title="Terminal"
-    npx degit codejumbo/scrollup my-docs
+    yarn create scrollup my-docs
     cd my-docs
     yarn install
     yarn dev
@@ -37,7 +37,7 @@ Clone the template with `degit`, install dependencies, and start the dev server.
   </Tab>
   <Tab index={3}>
     ```sh title="Terminal"
-    bunx degit codejumbo/scrollup my-docs
+    bun create scrollup my-docs
     cd my-docs
     bun install
     bun run dev
@@ -58,11 +58,11 @@ Open `localhost:4321` in your browser. Every edit to an `.mdx` file hot-reloads 
 If you prefer more control, you can set up Scrollup step by step.
 
 <Steps>
-  <Step num={1} title="Clone and install">
-    Clone the template and install dependencies.
+  <Step num={1} title="Scaffold and install">
+    Scaffold the template and install dependencies.
 
     ```sh title="Terminal"
-    npx degit codejumbo/scrollup my-docs
+    npm create scrollup@latest my-docs
     cd my-docs
     npm install
     ```

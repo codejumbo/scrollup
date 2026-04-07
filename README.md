@@ -17,7 +17,7 @@ Serif body text, warm color palette, and editorial layout designed for comfortab
 ## Quick start
 
 ```sh
-npx degit codejumbo/scrollup my-docs
+npm create scrollup@latest my-docs
 cd my-docs
 npm install
 npm run dev          # → localhost:4321

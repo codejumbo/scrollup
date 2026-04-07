@@ -1,0 +1,34 @@
+{
+  "name": "create-scrollup",
+  "version": "1.0.0",
+  "description": "Scaffold a new Scrollup documentation site",
+  "type": "module",
+  "bin": {
+    "create-scrollup": "src/index.js"
+  },
+  "files": [
+    "src"
+  ],
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "keywords": [
+    "documentation",
+    "astro",
+    "mdx",
+    "template",
+    "docs",
+    "create"
+  ],
+  "author": "Codejumbo LLC",
+  "license": "MIT",
+  "homepage": "https://scrollup.io",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codejumbo/scrollup.git",
+    "directory": "packages/create-scrollup"
+  },
+  "bugs": {
+    "url": "https://github.com/codejumbo/scrollup/issues"
+  }
+}

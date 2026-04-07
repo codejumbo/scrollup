@@ -13,9 +13,9 @@ This guide walks you through turning the Scrollup template into your own documen
 ## 1. Clone and customize
 
 <Steps>
-  <Step num={1} title="Clone the template">
+  <Step num={1} title="Scaffold the template">
     ```sh title="Terminal"
-    npx degit codejumbo/scrollup my-project-docs
+    npm create scrollup@latest my-project-docs
     cd my-project-docs
     npm install
     ```
@@ -76,12 +76,12 @@ content/docs/
 Create a folder and file for your first section.
 
 ```sh title="Terminal"
-mkdir -p content/docs/guides
+mkdir -p content/docs/en/guides
 ```
 
-Then create `content/docs/guides/quickstart.mdx`:
+Then create `content/docs/en/guides/quickstart.mdx`:
 
-```mdx title="content/docs/guides/quickstart.mdx"
+```mdx title="content/docs/en/guides/quickstart.mdx"
 ---
 title: "Quickstart"
 description: "Get up and running with MyProject in under 5 minutes."

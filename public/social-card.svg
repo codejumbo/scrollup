@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640" width="1280" height="640">
+  <defs>
+    <radialGradient id="glow" cx="95%" cy="5%" r="55%">
+      <stop offset="0%" stop-color="#0066FF" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#0066FF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="10%" cy="95%" r="40%">
+      <stop offset="0%" stop-color="#0066FF" stop-opacity="0.07"/>
+      <stop offset="100%" stop-color="#0066FF" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1280" height="640" fill="#161619"/>
+
+  <!-- Glow overlays -->
+  <rect width="1280" height="640" fill="url(#glow)"/>
+  <rect width="1280" height="640" fill="url(#glow2)"/>
+
+  <!-- Top accent line -->
+  <rect x="0" y="0" width="1280" height="3" fill="#0066FF" opacity="0.8"/>
+
+  <!-- Large watermark logo (right side) -->
+  <g transform="translate(750, 48) scale(13)" opacity="0.055">
+    <rect x="4" y="4" width="4" height="24" rx="2" fill="#70B8FF"/>
+    <rect x="11" y="4" width="17" height="5" rx="2" fill="#70B8FF"/>
+    <rect x="11" y="13.5" width="12" height="5" rx="2" fill="#70B8FF"/>
+    <rect x="11" y="23" width="7" height="5" rx="2" fill="#70B8FF"/>
+  </g>
+
+  <!-- Logo mark (top left, scale 3x) -->
+  <g transform="translate(80, 76) scale(3)">
+    <rect x="4" y="4" width="4" height="24" rx="2" fill="#70B8FF"/>
+    <rect x="11" y="4" width="17" height="5" rx="2" fill="#70B8FF"/>
+    <rect x="11" y="13.5" width="12" height="5" rx="2" fill="#70B8FF"/>
+    <rect x="11" y="23" width="7" height="5" rx="2" fill="#70B8FF"/>
+  </g>
+
+  <!-- Wordmark -->
+  <text x="192" y="133" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif" font-weight="700" font-size="36" fill="#ECECEC" letter-spacing="-0.5">scrollup</text>
+  <text x="192" y="158" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif" font-size="17" fill="#9494A0" letter-spacing="0">scrollup.io</text>
+
+  <!-- Main headline -->
+  <text x="80" y="305" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif" font-weight="800" font-size="84" fill="#ECECEC" letter-spacing="-2.5">Documentation</text>
+  <text x="80" y="398" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif" font-weight="800" font-size="84" fill="#ECECEC" letter-spacing="-2.5">Site <tspan fill="#70B8FF">Template.</tspan></text>
+
+  <!-- Tagline -->
+  <text x="80" y="458" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif" font-size="24" fill="#9494A0">Beautiful docs with MDX, full-text search, i18n, and dark mode — built on Astro 6.</text>
+
+  <!-- Separator -->
+  <line x1="80" y1="510" x2="1200" y2="510" stroke="#2E2E38" stroke-width="1"/>
+
+  <!-- Feature pills -->
+  <rect x="80" y="530" width="88" height="34" rx="17" fill="#1C1C21" stroke="#2E2E38" stroke-width="1"/>
+  <text x="124" y="552" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif" font-size="15" fill="#9494A0" text-anchor="middle">Astro 6</text>
+
+  <rect x="180" y="530" width="68" height="34" rx="17" fill="#1C1C21" stroke="#2E2E38" stroke-width="1"/>
+  <text x="214" y="552" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif" font-size="15" fill="#9494A0" text-anchor="middle">MDX</text>
+
+  <rect x="260" y="530" width="58" height="34" rx="17" fill="#1C1C21" stroke="#2E2E38" stroke-width="1"/>
+  <text x="289" y="552" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif" font-size="15" fill="#9494A0" text-anchor="middle">i18n</text>
+
+  <rect x="330" y="530" width="80" height="34" rx="17" fill="#1C1C21" stroke="#2E2E38" stroke-width="1"/>
+  <text x="370" y="552" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif" font-size="15" fill="#9494A0" text-anchor="middle">Search</text>
+
+  <rect x="422" y="530" width="106" height="34" rx="17" fill="#1C1C21" stroke="#2E2E38" stroke-width="1"/>
+  <text x="475" y="552" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif" font-size="15" fill="#9494A0" text-anchor="middle">Dark Mode</text>
+
+  <rect x="540" y="530" width="90" height="34" rx="17" fill="#1C1C21" stroke="#2E2E38" stroke-width="1"/>
+  <text x="585" y="552" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif" font-size="15" fill="#9494A0" text-anchor="middle">TypeScript</text>
+
+  <!-- URL bottom right -->
+  <text x="1200" y="552" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif" font-size="20" fill="#70B8FF" text-anchor="end" font-weight="600">scrollup.io</text>
+</svg>
