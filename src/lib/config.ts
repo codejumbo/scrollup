@@ -35,7 +35,7 @@ export function formatDate(dateString: string): string {
 }
 
 export const siteConfig = {
-  siteName: 'Scrollup.io' as string | Partial<Record<string, string>>,
+  siteName: 'ScrollUp' as string | Partial<Record<string, string>>,
   siteUrl: 'https://scrollup.io' as string,
   description: 'Beautiful documentation, effortlessly.' as string,
   repoUrl: 'https://github.com/codejumbo/scrollup' as string,
@@ -60,5 +60,5 @@ export const siteConfig = {
 export function getSiteName(locale: string): string {
   const { siteName } = siteConfig;
   if (typeof siteName === 'string') return siteName;
-  return siteName[locale] ?? siteName['en'] ?? 'Scrollup.io';
+  return siteName[locale] ?? siteName['en'] ?? 'ScrollUp';
 }

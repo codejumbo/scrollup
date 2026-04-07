@@ -1,0 +1,39 @@
+{
+  "name": "@scrollup/theme",
+  "version": "0.0.1",
+  "description": "Design tokens and CSS theming for Scrollup documentation sites",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./tokens.css": "./src/tokens.css"
+  },
+  "files": [
+    "src"
+  ],
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "keywords": [
+    "documentation",
+    "astro",
+    "css",
+    "theme",
+    "design-tokens",
+    "scrollup"
+  ],
+  "author": "Codejumbo LLC",
+  "license": "MIT",
+  "homepage": "https://scrollup.io",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codejumbo/scrollup.git",
+    "directory": "packages/theme"
+  },
+  "bugs": {
+    "url": "https://github.com/codejumbo/scrollup/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

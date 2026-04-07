@@ -1,0 +1,39 @@
+{
+  "name": "@scrollup/cli",
+  "version": "0.0.1",
+  "description": "CLI tools for Scrollup documentation sites",
+  "type": "module",
+  "bin": {
+    "scrollup": "src/index.js"
+  },
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src"
+  ],
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "keywords": [
+    "documentation",
+    "astro",
+    "cli",
+    "scrollup"
+  ],
+  "author": "Codejumbo LLC",
+  "license": "MIT",
+  "homepage": "https://scrollup.io",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codejumbo/scrollup.git",
+    "directory": "packages/cli"
+  },
+  "bugs": {
+    "url": "https://github.com/codejumbo/scrollup/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
